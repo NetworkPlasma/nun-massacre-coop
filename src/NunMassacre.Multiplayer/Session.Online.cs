@@ -65,9 +65,9 @@ namespace NunMassacre.Multiplayer
                     else
                     {
                         OnlineStatus = result.Outcome == RouterOutcome.SharedAddress
-                            ? "Online hosting is blocked: your internet connection shares its address (or sits behind a second router). Have a friend host, or use a VPN."
-                            : result.Outcome == RouterOutcome.NoRouter ? "Your router did not answer (UPnP may be off in its settings). Turn UPnP on, forward TCP port " + result.InternalPort + ", or use a VPN."
-                            : "Your router did not open the port. " + result.Detail + " Forward TCP port " + result.InternalPort + " or use a VPN.";
+                            ? "Your internet connection can't host online (it shares its address). Have a friend host, or use a VPN."
+                            : result.Outcome == RouterOutcome.NoRouter ? "Online play needs UPnP: turn it on in your router's settings and host again (or use a VPN)."
+                            : "Your router did not open the port. Turn on UPnP in its settings and host again (or use a VPN).";
                         plugin.Log("Online play unavailable: " + result.Outcome + ": " + result.Detail);
                     }
                 }

@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using NunMassacre.Multiplayer.Network;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -62,14 +60,11 @@ namespace NunMassacre.Multiplayer.Ui
         private GameObject main, playSettings;
         private Button entry, hostButton, joinButton, startButton, leaveButton, backButton, inviteRow, characterButton, creditsButton;
         private Text leaveLabel, status, lanTitle, hostNote, joinTitle, playersTitle, inviteValue, characterValue;
-        private Button portInfo, networkInfo;
-        private Text portInfoValue, networkInfoValue;
         private readonly Button[] lanButtons = new Button[3];
         private readonly Text[] lanValues = new Text[3];
         private readonly Network.LanDiscovery.Game[] lanGames = new Network.LanDiscovery.Game[3];
         private InputField nameField, addressField, portField;
         private GameObject nameRow, addressRow, portRow;
-        private string localAddresses;
         // Four pages: the connect/lobby page, the character page, voice and microphone (as in SETTINGS > MULTIPLAYER) and the credits.
         private Transform buildParent, content, customizePage, creditsPage, voicePage;
         private Button voiceButton, voiceBack, voiceChatRow, voiceTalkRow, voiceKeyRow, voiceMicRow, voiceLevelRow,
@@ -82,6 +77,7 @@ namespace NunMassacre.Multiplayer.Ui
         private Button creditsBack, lookRow;
         private Text lookValue;
         private string copiedInvite; // The invite code last put on the clipboard.
+        private string joiningGame; // Whose game on this network is being joined (its address is never shown).
         private RawImage previewImage;
         private Players.RemotePlayers.Preview preview;
         private Text lookName;
@@ -192,8 +188,6 @@ namespace NunMassacre.Multiplayer.Ui
             }
             // In a session: what to tell friends, and who is here.
             inviteRow = ValueRow("INVITE CODE", "", CopyInvite, out inviteValue);
-            portInfo = InfoRow("PORT", out portInfoValue);
-            networkInfo = InfoRow("LAN / VPN", out networkInfoValue);
             joinTitle = SubLabel("JoinTitle", "FRIENDS JOIN WITH");
             playersTitle = SubLabel("PlayersTitle", "PLAYERS");
             for (int i = 0; i < slots.Length; i++) slots[i] = InfoRow("SLOT " + (i + 1), out slotValues[i]);
@@ -509,12 +503,8 @@ namespace NunMassacre.Multiplayer.Ui
             if (invite) inviteValue.text = session.Invite;
             // Ready to paste to a friend.
             if (invite && copiedInvite != session.Invite) { GUIUtility.systemCopyBuffer = session.Invite; copiedInvite = session.Invite; }
-            portInfo.gameObject.SetActive(host && active);
-            portInfoValue.text = plugin.Port.Value.ToString();
-            networkInfo.gameObject.SetActive(host && active && !string.IsNullOrEmpty(localAddresses));
-            networkInfoValue.text = localAddresses ?? "";
             hostNote.gameObject.SetActive(!active);
-            joinTitle.gameObject.SetActive(host && connected);
+            joinTitle.gameObject.SetActive(invite && connected);
             playersTitle.gameObject.SetActive(connected);
             // Character and voice belong to the lobby: once in a session, before the game starts.
             characterButton.gameObject.SetActive(connected);
@@ -536,8 +526,8 @@ namespace NunMassacre.Multiplayer.Ui
                     : session.Status != "Offline" && !string.IsNullOrEmpty(session.Status) ? session.Status.ToUpperInvariant()
                     : "HOST A GAME, OR JOIN ONE WITH THE HOST'S INVITE CODE.";
             else if (!connected)
-                text = IsInvite(plugin.Address.Value) ? "CONNECTING WITH THE INVITE CODE..."
-                    : "CONNECTING TO " + plugin.Address.Value + ":" + plugin.Port.Value + "...";
+                text = joiningGame != null ? ("CONNECTING TO " + joiningGame + "'S GAME...").ToUpperInvariant()
+                    : IsInvite(plugin.Address.Value) ? "CONNECTING WITH THE INVITE CODE..." : "CONNECTING...";
             else if (host)
                 text = invite ? (copiedInvite == session.Invite ? "INVITE CODE COPIED. FRIENDS ANYWHERE PASTE IT AND JOIN." : "SELECT THE INVITE CODE TO COPY IT.")
                     : (session.OnlineStatus ?? "").ToUpperInvariant();
@@ -624,7 +614,7 @@ namespace NunMassacre.Multiplayer.Ui
             leftBox.Header.text = connected ? "LOBBY  " + plugin.Session.Roster().Count + "/4" : active ? "CONNECTING" : "HOST A GAME";
             rightBox.Header.text = connected ? "YOUR SETTINGS" : "JOIN A GAME";
             var left = connected
-                ? new List<Component> { joinTitle, inviteRow, portInfo, networkInfo, null, playersTitle, slots[0], slots[1], slots[2], slots[3] }
+                ? new List<Component> { joinTitle, inviteRow, null, playersTitle, slots[0], slots[1], slots[2], slots[3] }
                 : new List<Component> { portRow.transform, null, hostButton, hostNote, active ? leaveButton : null };
             var right = connected
                 ? new List<Component> { characterButton, voiceButton }
@@ -741,7 +731,6 @@ namespace NunMassacre.Multiplayer.Ui
             if (!ReadPort(out port)) return;
             SaveName(nameField.text);
             message = "";
-            localAddresses = LanAddresses();
             plugin.Session.Host(port);
             Refresh();
         }
@@ -755,6 +744,7 @@ namespace NunMassacre.Multiplayer.Ui
             SaveName(nameField.text);
             plugin.Address.Value = address;
             message = "";
+            joiningGame = null;
             IPAddress invited; int invitePort, key;
             if (InviteCode.TryParse(address, out invited, out invitePort, out key)) plugin.Session.Join(invited.ToString(), invitePort, key);
             else if (address.Replace("-", "").Replace(" ", "").Length == 16 && address.IndexOf('.') < 0)
@@ -790,9 +780,11 @@ namespace NunMassacre.Multiplayer.Ui
         {
             var game = lanGames[slot];
             if (game == null) return;
-            addressField.text = game.Address;
-            portField.text = game.Port.ToString();
-            JoinGame();
+            SaveName(nameField.text);
+            message = "";
+            joiningGame = game.Name;
+            plugin.Session.Join(game.Address, game.Port);
+            Refresh();
         }
 
         private void OnDisable()
@@ -853,30 +845,6 @@ namespace NunMassacre.Multiplayer.Ui
             string name = new string((value ?? "").Where(c => !char.IsControl(c) && c != '<' && c != '>').Take(24).ToArray()).Trim();
             if (name.Length > 0) plugin.PlayerName.Value = name;
             nameField.text = plugin.PlayerName.Value;
-        }
-
-        // Addresses a friend could reach: real network adapters (with a gateway) first, then VPN
-        // adapters such as Hamachi/ZeroTier/Tailscale. Hyper-V, WSL and VM adapters are skipped.
-        private static string LanAddresses()
-        {
-            try
-            {
-                string[] virtualAdapters = { "vethernet", "hyper-v", "vmware", "virtualbox", "wsl", "docker", "loopback", "bluetooth", "pseudo" };
-                var found = NetworkInterface.GetAllNetworkInterfaces()
-                    .Where(n => n.OperationalStatus == OperationalStatus.Up && n.NetworkInterfaceType != NetworkInterfaceType.Loopback)
-                    .Where(n => !virtualAdapters.Any(v => (n.Name + " " + n.Description).ToLowerInvariant().Contains(v)))
-                    .Select(n => new { Properties = n.GetIPProperties() })
-                    .SelectMany(n => n.Properties.UnicastAddresses
-                        .Where(a => a.Address.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(a.Address))
-                        .Select(a => new { Address = a.Address.ToString(), Gateway = n.Properties.GatewayAddresses.Any(g => g.Address.AddressFamily == AddressFamily.InterNetwork && !g.Address.Equals(IPAddress.Any)) }))
-                    .Where(a => !a.Address.StartsWith("169.254.", StringComparison.Ordinal))
-                    .OrderByDescending(a => a.Gateway).Select(a => a.Address).Distinct().Take(2).ToArray();
-                if (found.Length > 0) return string.Join("  ", found);
-                return string.Join("  ", Dns.GetHostAddresses(Dns.GetHostName())
-                    .Where(a => a.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(a))
-                    .Select(a => a.ToString()).Distinct().Take(2).ToArray());
-            }
-            catch (Exception) { return ""; }
         }
 
         // ---------- The game's widgets ----------

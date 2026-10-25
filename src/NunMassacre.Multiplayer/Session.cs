@@ -251,7 +251,7 @@ namespace NunMassacre.Multiplayer
             if (world == null) SceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
             world.SetRole(false);
             transport.Connect(address, port);
-            Status = "Connecting to " + address + ":" + port;
+            Status = "Connecting...";
         }
 
         internal void Disconnect(string reason)
