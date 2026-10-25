@@ -8,9 +8,9 @@ using Microsoft.Win32;
 namespace NunMassacreCoop.Setup
 {
     /// <summary>
-    /// Finds copies of Nun Massacre on this PC: beside this program (dropped into the game's folder), in the itch app's
-    /// library and the installed-programs list, then by looking through the usual folders and drives (where a download
-    /// from itch.io or Patreon was unzipped). Each copy is reported as soon as it is found.
+    /// Finds copies of Nun Massacre on this PC: beside this program (dropped into the game's folder), in the
+    /// installed-programs list, then by looking through the usual folders and drives (where a download from itch.io or
+    /// Patreon was unzipped). Each copy is reported as soon as it is found.
     /// </summary>
     internal static class GameLocator
     {
@@ -41,7 +41,6 @@ namespace NunMassacreCoop.Setup
             for (int up = 0; here != null && up < 3; up++, here = here.Parent) report(here.FullName, HereSource);
 
             Safe(() => Registered(report));
-            Safe(() => Scan(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "itch", "apps"), 2, report, "ITCH", cancelled, Stopwatch.StartNew(), 4000));
 
             // Then by looking: the usual places first, then every fixed drive. About twenty seconds at most.
             var clock = Stopwatch.StartNew();
