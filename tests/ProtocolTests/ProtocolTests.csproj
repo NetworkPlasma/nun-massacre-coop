@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><NoWarn>SYSLIB0050;0649</NoWarn></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="..\..\src\NunMassacre.Multiplayer\JsonCodec.cs" Link="JsonCodec.cs" />
+    <Compile Include="..\..\src\NunMassacre.Multiplayer\Messages.cs" Link="Messages.cs" />
+    <Compile Include="..\..\src\NunMassacre.Multiplayer\World\WorldSnapshot.cs" Link="WorldSnapshot.cs" />
+    <Compile Include="..\..\src\NunMassacre.Multiplayer\Network\WireCodec.cs" Link="WireCodec.cs" />
+    <Compile Include="..\..\src\NunMassacre.Multiplayer\Voice\VoiceCodec.cs" Link="VoiceCodec.cs" />
+    <Reference Include="..\..\Nun Massacre Definitive Edition (Windows) 2022.06.08\Nun Massacre_Data\Managed\UnityEngine.CoreModule.dll" />
+    <Reference Include="..\..\Nun Massacre Definitive Edition (Windows) 2022.06.08\Nun Massacre_Data\Managed\Newtonsoft.Json.dll" />
+  </ItemGroup>
+</Project>
