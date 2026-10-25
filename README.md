@@ -1,3 +1,5 @@
+<p align="center"><img src="src/NunMassacreCoop.Setup/icon-source.png" width="220" alt="The Nun"></p>
+
 # Nun Massacre Co-op — 1.0.0
 
 A co-op multiplayer mod for **Nun Massacre Definitive Edition (Windows, 2022.06.08)**. Up to four players (one host, three guests) survive the Nun together, with proximity voice chat, revives, and a Nun that hunts every player. It runs on BepInEx 5 and does not modify the game's own files.
