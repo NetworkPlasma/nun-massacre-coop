@@ -78,7 +78,7 @@ Report with the bug-report template (`.github/ISSUE_TEMPLATE/bug_report.md`) and
    another entity and promotion; if Puppet Combo publishes or promotes it, a short note to Vercidium
    (notices@vercidium.com) would settle that for certain. Its required attribution, "Powered by Vercidium Audio", is in
    MOD CREDITS, the README and the notices.
-2. **Character models.** Mike, Maddy and Mark are by Vinrax and credited as such; the mod being free, the owner takes
+2. **Character models.** Mike, Maddy, Mark and Maverick are by Vinrax and credited as such (Maddy, Mark and Maverick with their CC BY 4.0 attributions); the mod being free, the owner takes
    their use to be fine.
 3. **Wording.** "Unofficial fan mod" is gone from the README, the itch.io draft and the credits. Nothing claims the mod is
    official either: that wording waits for Puppet Combo.

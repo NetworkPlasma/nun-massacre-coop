@@ -79,6 +79,13 @@ CHARACTERS = {
                   "bones": {"shoulder_l": "shoulder_left", "upper_arm_l": "upper_arm_left", "forearm_l": "forearm_left", "hand_l": "hand_left",
                             "shoulder_r": "shoulder_right", "upper_arm_r": "upper_arm_right", "forearm_r": "forearm_right", "hand_r": "hand_right",
                             "thigh_l": "thigh_left", "calf_l": "shin.L", "foot_l": "foot_left", "thigh_r": "thigh_right", "calf_r": "shin.R", "foot_r": "foot_right"}},
+    # Maverick: the scientist's rig names. The cigarette in his mouth is left out (its faces are the only ones drawn
+    # entirely from the cigarette at the top of the texture); his cap and the pack at his hip stay.
+    "redneck": {"zip": "redneck-character-psx-style.zip", "inner": "source/redneck.zip", "fbx": "redneck.fbx", "texture": "redneck_tex.png", "out": "redneck",
+                "drop_uv": [(0.60, 0.95, 0.78, 1.0)],
+                "bones": {"shoulder_l": "shoulder_left", "upper_arm_l": "upper_arm_left", "forearm_l": "forearm_left", "hand_l": "hand_left",
+                          "shoulder_r": "shoulder_right", "upper_arm_r": "upper_arm_right", "forearm_r": "forearm_right", "hand_r": "hand_right",
+                          "thigh_l": "thigh_left", "calf_l": "shin.L", "foot_l": "foot_left", "thigh_r": "thigh_right", "calf_r": "shin.R", "foot_r": "foot_right"}},
     # The ghost's legs, arms and neck all hang off one Spine bone: it drives as the pelvis (bob only,
     # so leaning the torso does not swing the legs). Its "Shoulder" is the upper arm.
     "ghost": {"zip": "character-ghost.zip", "inner": None, "fbx": "source/Character_Ghost.fbx", "texture": "textures/Ghost.png", "out": "ghost",
@@ -128,22 +135,19 @@ def convert(entry, out):
     # Bones: one per skin cluster. The axis-converted bind matrices are mirrored (determinant -1),
     # so only joint positions are exported; at runtime every bone gets an axis-aligned frame,
     # which skins identically and lets animation rotate about the body's own axes.
-    first_mesh = meshes[0]
-    deformers = first_mesh.skin_deformers
-    skin = deformers[0]
-    clusters = skin.clusters
-    skin_vertices, skin_weights = skin.vertices, skin.weights
-    keep.extend([first_mesh, deformers, skin, clusters, skin_vertices, skin_weights])
-    vertex_weights = []
-    for vi in range(len(skin_vertices)):
-        sv = skin_vertices[vi]
-        keep.append(sv)
-        entries = []
-        for k in range(sv.num_weights):
-            w = skin_weights[sv.weight_begin + k]
-            keep.append(w)
-            entries.append((int(w.cluster_index), float(w.weight)))
-        vertex_weights.append(entries)
+    # The rig is the skin with the most bones (the body's); any other mesh (a cap) is skinned to the same bones,
+    # matched by node.
+    skins = []
+    for mi in range(len(meshes)):
+        mesh = meshes[mi]
+        mesh_deformers = mesh.skin_deformers
+        keep.extend([mesh, mesh_deformers])
+        if len(mesh_deformers):
+            mesh_skin = mesh_deformers[0]
+            mesh_clusters = mesh_skin.clusters
+            keep.extend([mesh_skin, mesh_clusters])
+            skins.append((len(mesh_clusters), mi, mesh_skin, mesh_clusters))
+    _, _, skin, clusters = max(skins, key=lambda s: (s[0], -s[1]))
     bone_names = dict(BONE_NAMES, **entry.get("bones", {}))
     bone_nodes = []
     parent_ids = []
@@ -164,12 +168,41 @@ def convert(entry, out):
     for index, parent_id in enumerate(parent_ids):
         parent = node_ids.index(parent_id) if parent_id in node_ids else -1
         result["boneParents"].append(parent if parent != index else -1)
-    def corner_weights(vertex):
+    def weights_of(mesh):
+        """Each vertex's (bone, weight) pairs, the mesh's own skin clusters matched to the rig's bones."""
+        mesh_deformers = mesh.skin_deformers
+        keep.append(mesh_deformers)
+        if not len(mesh_deformers):
+            return None
+        mesh_skin = mesh_deformers[0]
+        mesh_clusters, skin_vertices, skin_weights = mesh_skin.clusters, mesh_skin.vertices, mesh_skin.weights
+        keep.extend([mesh_skin, mesh_clusters, skin_vertices, skin_weights])
+        to_bone = []
+        for ci in range(len(mesh_clusters)):
+            cluster = mesh_clusters[ci]
+            node = cluster.bone_node
+            keep.extend([cluster, node])
+            to_bone.append(node_ids.index(node.element_id) if node.element_id in node_ids else 0)
+        vertex_weights = []
+        for vi in range(len(skin_vertices)):
+            sv = skin_vertices[vi]
+            keep.append(sv)
+            entries = []
+            for k in range(sv.num_weights):
+                w = skin_weights[sv.weight_begin + k]
+                keep.append(w)
+                entries.append((to_bone[int(w.cluster_index)], float(w.weight)))
+            vertex_weights.append(entries)
+        return vertex_weights
+    def corner_weights(vertex_weights, vertex):
+        if vertex_weights is None:
+            return [0, 0, 0, 0], [1.0, 0.0, 0.0, 0.0]
         pairs = sorted(vertex_weights[vertex], key=lambda p: -p[1])[:4]
         while len(pairs) < 4:
             pairs.append((0, 0.0))
         total = sum(w for _, w in pairs) or 1
         return [p[0] for p in pairs], [round(p[1] / total, 5) for p in pairs]
+    dropped = 0
     for mesh in meshes:
         instances = mesh.instances
         node = instances[0]
@@ -181,14 +214,18 @@ def convert(entry, out):
         uvv, uvi = uv.values, uv.indices
         faces = mesh.faces
         keep.extend([mesh, instances, node, matrix, norm_matrix, positions, normals, uv, pv, pi, nv, ni, uvv, uvi, faces])
+        vertex_weights = weights_of(mesh)
         for face in faces:
             indices = list(range(face.index_begin, face.index_begin+face.num_indices))
+            tex = [[uvv[uvi[i]].x, uvv[uvi[i]].y] for i in indices]
+            if any(all(u0 <= u <= u1 and v0 <= v <= v1 for u, v in tex) for u0, v0, u1, v1 in entry.get("drop_uv", [])):
+                dropped += 1
+                continue
             pts = [transform(matrix, pv[pi[i]], True) for i in indices]
             nms = [transform(norm_matrix, nv[ni[i]]) for i in indices]
-            tex = [[uvv[uvi[i]].x, uvv[uvi[i]].y] for i in indices]
             start = len(result["vertices"])//3
             for i in indices:
-                bones, weights = corner_weights(pi[i])
+                bones, weights = corner_weights(vertex_weights, pi[i])
                 result["boneIndex"].extend(bones)
                 result["boneWeight"].extend(weights)
             for pt, nm, st in zip(pts,nms,tex):
@@ -224,7 +261,8 @@ def convert(entry, out):
     assert all(0 <= i < len(vertices)//3 for i in result["triangles"])
     (out/(entry["out"] + ".mesh.json")).write_text(json.dumps(result,separators=(",",":")),encoding="utf-8")
     (out/(entry["out"] + ".png")).write_bytes(texture)
-    print(f"{entry['out']}: converted {len(vertices)//3} mesh corners / {len(result['triangles'])//3} triangles, {len(names)} bones; source height {height:.3f}m.")
+    print(f"{entry['out']}: converted {len(vertices)//3} mesh corners / {len(result['triangles'])//3} triangles, {len(names)} bones; source height {height:.3f}m."
+          + (f" Left out {dropped} faces." if dropped else ""))
     print("Skinned supplied model and original texture; animation is procedural at runtime.")
 
 

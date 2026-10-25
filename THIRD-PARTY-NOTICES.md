@@ -29,8 +29,12 @@ available from that repository. The release also contains, under their own licen
 
 ## Character models
 
-Mike, Maddy and Mark are by Vinrax (https://sketchfab.com/vinrax, https://x.com/Vinrax). The models keep their author's
-ownership and licences; this project asserts no licence to redistribute them separately from the mod.
+- "Redneck Character PSX Style" (https://skfb.ly/pypzp) by vinrax is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/). Played as Maverick; converted to the mod's format, the cigarette left out.
+- "Female Secretary Character PSX" (https://skfb.ly/oQoOE) by vinrax is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/). Played as Maddy; converted to the mod's format.
+- "Scientist PSX style" (https://skfb.ly/oA8NX) by vinrax is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/). Played as Mark; converted to the mod's format.
+- Mike is by Vinrax (https://sketchfab.com/vinrax).
+
+The models keep their author's ownership; this project asserts no licence to redistribute them separately from the mod.
 
 ## Animation
 

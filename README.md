@@ -31,7 +31,7 @@ Windows Firewall may ask the first time you host: allow it.
 2. **Friends:** MULTIPLAYER → enter your name → click the invite code box and paste the code (**Ctrl+V**). You join straight away. On the same network as the host, you can instead select the host's game in the list under the box.
 3. **Host:** **START GAME**, then choose the difficulty and scenario as usual. Everyone starts together.
 
-In the lobby, **YOUR SETTINGS** sets your character (Mike, Maddy or Mark), your voice and your microphone. Friends can join a game that is already running. If the host quits, the game ends for everyone.
+In the lobby, **YOUR SETTINGS** sets your character (Mike, Maddy, Mark or Maverick), your voice and your microphone. Friends can join a game that is already running. If the host quits, the game ends for everyone.
 
 ## How co-op plays
 
@@ -70,7 +70,11 @@ In the lobby, **YOUR SETTINGS** sets your character (Mike, Maddy or Mark), your 
 Multiplayer mod by **NetworkPlasma**.
 
 - Raytraced audio: **Powered by Vercidium Audio** ([vercidium.com](https://vercidium.com)), used under its free non-commercial licence.
-- Character models: **Mike, Maddy and Mark by Vinrax** ([sketchfab.com/vinrax](https://sketchfab.com/vinrax)).
+- Character models by **Vinrax** ([sketchfab.com/vinrax](https://sketchfab.com/vinrax)):
+  - "Redneck Character PSX Style" (https://skfb.ly/pypzp) by vinrax is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/). Played as Maverick, the cigarette left out.
+  - "Female Secretary Character PSX" (https://skfb.ly/oQoOE) by vinrax is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/). Played as Maddy.
+  - "Scientist PSX style" (https://skfb.ly/oA8NX) by vinrax is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/). Played as Mark.
+  - Mike, by Vinrax.
 - Motion capture: Mixamo. Mod loader: BepInEx 5 and Harmony.
 - Nun Massacre is a game by Puppet Combo.
 

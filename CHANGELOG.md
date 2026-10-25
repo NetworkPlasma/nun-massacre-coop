@@ -18,7 +18,7 @@ The first public release of the multiplayer mod for Nun Massacre Definitive Edit
   bleed-out. Out of lives, spectate until the next level.
 - **Hide two to a bed, shout to pull the Nun off a friend, point and whistle.**
 - **A tool for every player** (the lighter, the map, the bandages); the radar and the revolver stay one each for the team.
-- **Teammates as Mike, Maddy or Mark** (by Vinrax), with motion-captured movement drawn in the game's own PS1 style,
+- **Teammates as Mike, Maddy, Mark or Maverick** (by Vinrax), with motion-captured movement drawn in the game's own PS1 style,
   holding what they carry in the palm of their hand.
 - **A clear MULTIPLAYER screen:** your name, then HOST A GAME or JOIN A GAME (with games on your own network listed); in the
   lobby, the players and how friends join, and your character, voice and microphone (shown by its full name).

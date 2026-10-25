@@ -7,6 +7,8 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\secretary.png" LogicalName="NMM.Character.secretary.Texture" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\scientist.mesh.json" LogicalName="NMM.Character.scientist.Mesh" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\scientist.png" LogicalName="NMM.Character.scientist.Texture" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\redneck.mesh.json" LogicalName="NMM.Character.redneck.Mesh" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\redneck.png" LogicalName="NMM.Character.redneck.Texture" />
     <!-- Motion-captured clips converted by scripts/convert-animation.py from Mixamo FBX files: the crawl (downed
          players) and the walks (Walking for Mike and Mark, Female Walk for Maddy). -->
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\crawl.anim.json" LogicalName="NMM.Anim.Crawl" />

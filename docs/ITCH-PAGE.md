@@ -89,7 +89,8 @@ attach `BepInEx/LogOutput.log` from the game folder. [Link to the issue tracker 
 ## Credits
 
 - Multiplayer mod: NetworkPlasma
-- Character models: Mike, Maddy and Mark by Vinrax
+- Character models: Mike, Maddy, Mark and Maverick by Vinrax (Maddy, Mark and Maverick under CC BY 4.0; full attributions
+  in THIRD-PARTY-NOTICES.md)
 - Motion capture: Mixamo
 - Raytraced audio: **Powered by Vercidium Audio** (vercidium.com)
 - Mod loader: BepInEx and Harmony
