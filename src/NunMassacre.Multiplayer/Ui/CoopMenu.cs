@@ -171,10 +171,11 @@ namespace NunMassacre.Multiplayer.Ui
             buildParent = content;
             Title("- MULTIPLAYER -");
             nameField = FieldRow("YOUR NAME", plugin.PlayerName.Value, 24, InputField.ContentType.Standard, out nameRow);
+            if (!IsInvite(plugin.Address.Value)) plugin.Address.Value = ""; // Only an invite code is kept, never an address.
             addressField = FieldRow("INVITE CODE", plugin.Address.Value, 64, InputField.ContentType.Standard, out addressRow);
             portField = FieldRow("PORT", plugin.Port.Value.ToString(), 5, InputField.ContentType.IntegerNumber, out portRow);
             nameField.onEndEdit.AddListener(SaveName);
-            addressField.onEndEdit.AddListener(value => plugin.Address.Value = value.Trim());
+            addressField.onEndEdit.AddListener(value => plugin.Address.Value = IsInvite(value.Trim()) ? value.Trim() : "");
             hostButton = Row("HOST GAME", HostGame);
             joinButton = Row("JOIN GAME", JoinGame);
             Framed(hostButton);
@@ -742,7 +743,7 @@ namespace NunMassacre.Multiplayer.Ui
             string address = addressField.text.Trim();
             if (address.Length == 0) { message = "ENTER THE HOST'S INVITE CODE OR ADDRESS FIRST."; Refresh(); return; }
             SaveName(nameField.text);
-            plugin.Address.Value = address;
+            plugin.Address.Value = IsInvite(address) ? address : "";
             message = "";
             joiningGame = null;
             IPAddress invited; int invitePort, key;

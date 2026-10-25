@@ -35,7 +35,7 @@ namespace NunMassacre.Multiplayer
                 if (args[i] == "-nmm-report") testLog = Path.ChangeExtension(args[i + 1], ".events.log");
             if (testLog != null) { File.WriteAllText(testLog, ""); Application.targetFrameRate = 30; }
             PlayerName = Config.Bind("Connection", "PlayerName", Environment.UserName, "Name visible to teammates.");
-            Address = Config.Bind("Connection", "Address", "", "The host's invite code (or their LAN or VPN address).");
+            Address = Config.Bind("Connection", "Address", "", "The last invite code used to join (an address typed in its place is not kept).");
             Port = Config.Bind("Connection", "Port", 27845, "TCP port, 1024-65535.");
             OpenRouterPort = Config.Bind("Connection", "OpenRouterPort", true,
                 "When hosting, ask the router (UPnP) to open the port so friends can join over the internet with an invite code. The port is closed again when hosting stops.");
