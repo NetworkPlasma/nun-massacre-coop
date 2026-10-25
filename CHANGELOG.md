@@ -1,11 +1,5 @@
 # Changelog
 
-## Unreleased
-
-- Teammates hold things properly: the hand closes round a hammer's handle a little way up, with its end showing
-  below the fist, instead of the hammer seeming to stand on top of it; the radar and other broad things sit in the
-  palm with the fingers round them instead of reaching out past the back of the hand.
-
 ## 1.0.0
 
 The first public release of the multiplayer mod for Nun Massacre Definitive Edition (Windows, build 2022.06.08).
@@ -24,7 +18,8 @@ The first public release of the multiplayer mod for Nun Massacre Definitive Edit
   bleed-out. Out of lives, spectate until the next level.
 - **Hide two to a bed, shout to pull the Nun off a friend, point and whistle.**
 - **A tool for every player** (the lighter, the map, the bandages); the radar and the revolver stay one each for the team.
-- **Teammates as Mike, Maddy or Mark** (by Vinrax), with motion-captured movement drawn in the game's own PS1 style.
+- **Teammates as Mike, Maddy or Mark** (by Vinrax), with motion-captured movement drawn in the game's own PS1 style,
+  holding what they carry in the palm of their hand.
 - **A clear MULTIPLAYER screen:** your name, then HOST A GAME or JOIN A GAME (with games on your own network listed); in the
   lobby, the players and how friends join, and your character, voice and microphone (shown by its full name).
 - **A setup program** that finds the game, installs the BepInEx loader and the mod, updates and uninstalls, and never
