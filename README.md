@@ -1,4 +1,4 @@
-<p align="center"><img src="src/NunMassacreCoop.Setup/icon-source.png" width="220" alt="The Nun"></p>
+<p align="center"><img src="docs/images/banner.png" alt="Nun Massacre multiplayer mod"></p>
 
 # Nun Massacre Co-op — 1.0.0
 
