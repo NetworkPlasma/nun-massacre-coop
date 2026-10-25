@@ -4,8 +4,8 @@
 
 The first public release of the multiplayer mod for Nun Massacre Definitive Edition (Windows, build 2022.06.08).
 
-- **Up to four players**, one host and three friends: over the internet with an invite code (the host's router opens the
-  port by UPnP where it can), or over a LAN or VPN. Friends can join a game that is already under way.
+- **Up to four players**, one host and three friends: over the internet with an invite code (the host needs UPnP turned on in
+  their router's settings), or over a LAN or VPN. Friends can join a game that is already under way.
 - **The whole game together:** the opening, every puzzle, every ending and the alternate scenarios (Carnival, Backrooms,
   PDM). Puzzles are shared, and a puzzle part mid-animation belongs to whoever is doing it. The school entrance, the
   scares and every ending wait for the whole group, then happen to everyone at once.

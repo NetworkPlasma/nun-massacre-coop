@@ -33,7 +33,7 @@ game together: the opening, every puzzle, every ending and the alternate scenari
 
 ## Requirements
 
-- **Nun Massacre Definitive Edition for Windows, build 2022.06.08** (your own copy, from the store you bought it from).
+- **Nun Massacre Definitive Edition for Windows, build 2022.06.08** (your own copy, from itch.io or Patreon).
   Every player needs it.
 - Windows 10 or 11, 64-bit.
 - A microphone is optional: without one you can still whistle and point.
@@ -41,8 +41,7 @@ game together: the opening, every puzzle, every ending and the alternate scenari
 ## Install
 
 1. Download **NunMassacreCoop-1.0.0.zip** and unzip it anywhere.
-2. Run **NunMassacreCoop-Setup.exe**. It finds the game by itself (installed with the itch app, or unzipped from an itch.io or Patreon download);
-   if not, press BROWSE and pick `Nun Massacre.exe`.
+2. Run **NunMassacreCoop-Setup.exe**. It finds the game by itself; if not, press BROWSE and pick `Nun Massacre.exe`.
 3. Press **INSTALL**, then **PLAY**, and choose **MULTIPLAYER** on the main menu.
 
 The setup installs the BepInEx 5 mod loader and the mod. It never changes the game's own files.
@@ -52,14 +51,14 @@ loader off so the game starts exactly as it came.
 ## Playing together
 
 - **Host:** MULTIPLAYER → enter a name → HOST GAME. Send the invite code (already on your clipboard) to your friends.
-- **Friends:** MULTIPLAYER → paste the code into INVITE CODE → JOIN GAME.
+- **Friends:** MULTIPLAYER → paste the code into INVITE CODE → JOIN GAME. On the host's network, just select their game
+  in the list.
 - **Host:** START GAME, then pick difficulty and scenario as usual. Friends can join a game that is already running.
 
-**Connecting over the internet.** Hosting asks your router to open TCP port 27845 (UPnP). Most home routers allow this,
-but not all: if the lobby says the port did not open, turn on UPnP, forward the port yourself, let a friend host, or use
-a virtual LAN (Tailscale, ZeroTier, Radmin VPN, Hamachi) and join the host's VPN address. Some internet providers share
-one address between many customers; then only a VPN or another host helps. Windows Firewall may ask the first time you
-host: allow it.
+**Playing online: the host needs UPnP turned on in their router's settings.** Hosting then opens the game's port by
+itself. Most routers have it on already; if the lobby says the port did not open, turn on UPnP in the router's settings
+page and host again. Otherwise let a friend host, forward TCP port 27845 yourself, or all join a free virtual LAN (Radmin
+VPN, ZeroTier, Tailscale) and type the host's VPN address into INVITE CODE. Windows Firewall may ask the first time you host: allow it.
 
 ## Controls
 
@@ -75,8 +74,8 @@ host: allow it.
 
 ## Troubleshooting
 
-- **Friends time out with the invite code:** allow Nun Massacre through Windows Firewall on the host. A new code is
-  made each time you host.
+- **Friends time out with the invite code:** check that UPnP is on in the host's router, and allow Nun Massacre through
+  Windows Firewall on the host. A new code is made each time you host.
 - **"Different game build or co-op mod version":** everyone needs build 2022.06.08 and the same mod version.
 - **No voice:** VOICE & MIC in the lobby: check the microphone, the mic test and the mic level.
 - **Stuck in an animation:** F2, then `unstuck`.
