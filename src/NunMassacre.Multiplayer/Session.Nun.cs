@@ -142,8 +142,21 @@ namespace NunMassacre.Multiplayer
         /// measured at: a sharp peak in ordinary speech counts as the speech it is, not as a shout. Heard from under a
         /// bed, she comes for that bed (EnemyDirector.Heard).
         /// </summary>
+        // ---------- The host's choice: how the Nun hears ----------
+        private bool hostOriginalHearing;
+        /// <summary>The Nun hears as in co-op (voices, footsteps, every sound through the building on the raytraced acoustics,
+        /// sharper on harder difficulties) unless the host chose ORIGINAL: as in the game alone.</summary>
+        internal bool CoopHearing { get { return IsHost || !Active ? !plugin.OriginalHearing.Value : !hostOriginalHearing; } }
+
+        /// <summary>Host: the hearing choice changed in the lobby; every guest is told.</summary>
+        internal void HearingChanged()
+        {
+            if (IsHost && Active) Broadcast(new Packet { type = "hearing", epoch = epoch, originalHearing = plugin.OriginalHearing.Value });
+        }
+
         private void HearShout(int peer, float level)
         {
+            if (!CoopHearing) return; // As in the game alone: she does not hear voices.
             if (enemy.Shout(peer)) return; // A call she can see: she answers it herself.
             PlayerFrame frame;
             if (!players.TryGetValue(peer, out frame)) return;
@@ -167,7 +180,7 @@ namespace NunMassacre.Multiplayer
         /// </summary>
         internal void HearVoice(int peer, float rms)
         {
-            if (!IsHost || !Ready || enemy == null) return;
+            if (!IsHost || !Ready || enemy == null || !CoopHearing) return;
             float level = Ears.Speech(peer, rms);
             float last;
             if (level <= 0f || (voiceHeardAt.TryGetValue(peer, out last) && Time.time - last < VoiceInterval)) return;
@@ -188,7 +201,7 @@ namespace NunMassacre.Multiplayer
         /// </summary>
         private void UpdateFootsteps()
         {
-            if (Message.Detectable.NoiseMadeEvent == null) return;
+            if (Message.Detectable.NoiseMadeEvent == null || !CoopHearing) return; // As in the game alone: no footsteps.
             foreach (var pair in players)
             {
                 var frame = pair.Value;

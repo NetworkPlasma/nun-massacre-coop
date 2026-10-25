@@ -139,7 +139,8 @@ namespace NunMassacre.Multiplayer.Ui
         private void HidingMeter(Session session, float scale)
         {
             var voice = session.Voice;
-            bool show = session.LocalHiding && session.Life.State == LifeState.Alive && voice.Enabled.Value && voice.HasMicrophone;
+            bool show = session.LocalHiding && session.Life.State == LifeState.Alive && voice.Enabled.Value && voice.HasMicrophone
+                && session.CoopHearing; // With ORIGINAL hearing she does not hear voices.
             float dt = Mathf.Min(Time.unscaledDeltaTime, 0.1f);
             meterAlpha = Mathf.MoveTowards(meterAlpha, show ? 1f : 0f, dt * 4f);
             if (meterAlpha <= 0f) { meterLevel = meterVelocity = 0f; return; }

@@ -18,7 +18,7 @@ namespace NunMassacre.Multiplayer
         internal Session Session;
         internal ConfigEntry<string> PlayerName, Address;
         internal ConfigEntry<int> Port;
-        internal ConfigEntry<bool> OpenRouterPort;
+        internal ConfigEntry<bool> OpenRouterPort, OriginalHearing;
         internal CoopConsole Console;
         internal ConfigEntry<string> Character;
         internal ConfigEntry<bool> NunDiagnostics;
@@ -39,12 +39,15 @@ namespace NunMassacre.Multiplayer
             Port = Config.Bind("Connection", "Port", 27845, "TCP port, 1024-65535.");
             OpenRouterPort = Config.Bind("Connection", "OpenRouterPort", true,
                 "When hosting, ask the router (UPnP) to open the port so friends can join over the internet with an invite code. The port is closed again when hosting stops.");
+            OriginalHearing = Config.Bind("Game", "OriginalHearing", false,
+                "When hosting: the Nun hears as in the game alone (ORIGINAL) instead of co-op hearing (voices, footsteps and every sound "
+                + "through the building, sharper on harder difficulties). Set in the lobby: NUN HEARING.");
             NunDiagnostics = Config.Bind("Debug", "NunDiagnostics", false,
                 "Write every sound the Nun hears, and what she does about it, to BepInEx/LogOutput.log.");
             Players.EnemyDirector.Diagnostics = NunDiagnostics.Value;
             NunDiagnostics.SettingChanged += (sender, e) => Players.EnemyDirector.Diagnostics = NunDiagnostics.Value;
             Character = Config.Bind("Appearance", "Character", "male_casual",
-                "Character teammates see: male_casual (Mike), secretary (Maddy) or scientist (Mark).");
+                "Character teammates see: male_casual (Mike), secretary (Maddy), scientist (Mark) or redneck (Maverick).");
             using (var sha = SHA256.Create())
                 BuildHash = BitConverter.ToString(sha.ComputeHash(File.ReadAllBytes(typeof(GrannyClone.Inventory).Assembly.Location))).Replace("-", "");
             Session = new Session(this);

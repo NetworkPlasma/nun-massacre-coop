@@ -117,7 +117,7 @@ namespace NunMassacre.Multiplayer
         private Packet ScenePacket(string type)
         {
             return new Packet { type = type, scene = SceneName, epoch = epoch, build = plugin.BuildHash,
-                number = (int)DifficultyController.CurrentDifficulty, settings = GameSettings() };
+                number = (int)DifficultyController.CurrentDifficulty, settings = GameSettings(), originalHearing = plugin.OriginalHearing.Value };
         }
 
         private void LoadHostScene()

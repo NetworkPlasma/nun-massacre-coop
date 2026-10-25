@@ -516,6 +516,7 @@ namespace NunMassacre.Multiplayer
             if (from != 1) return;
             if (p.type == "reject") { Drop(p.text); return; }
             if (p.type == "settings") { ApplyGameSettings(p.settings); return; } // E.g. a third player joined: three of each tool.
+            if (p.type == "hearing") { hostOriginalHearing = p.originalHearing; return; }
             if (p.type == "welcome")
             {
                 if (p.protocol != Packet.Protocol || p.build != plugin.BuildHash || p.peer < 2)
@@ -530,7 +531,7 @@ namespace NunMassacre.Multiplayer
             }
             if (p.type == "welcome" || p.type == "scene")
             {
-                hostScene = p.scene; epoch = p.epoch;
+                hostScene = p.scene; epoch = p.epoch; hostOriginalHearing = p.originalHearing;
                 DifficultyController.CurrentDifficulty = (DifficultyLevel)Mathf.Clamp(p.number, 0, 4);
                 ApplyGameSettings(p.settings);
                 Ready = false; announcedReady = false;

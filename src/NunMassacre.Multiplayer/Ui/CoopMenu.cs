@@ -65,6 +65,8 @@ namespace NunMassacre.Multiplayer.Ui
         private readonly Text[] lanValues = new Text[3];
         private readonly Network.LanDiscovery.Game[] lanGames = new Network.LanDiscovery.Game[3];
         private InputField nameField, addressField;
+        private Button hearingRow;
+        private Text hearingValue, hearingTitle, hearingNote;
         private GameObject nameRow, addressRow;
         // Four pages: the connect/lobby page, the character page, voice and microphone (as in SETTINGS > MULTIPLAYER) and the credits.
         private Transform buildParent, content, customizePage, creditsPage, voicePage;
@@ -209,6 +211,11 @@ namespace NunMassacre.Multiplayer.Ui
             characterButton = ValueRow("CHARACTER", "", OpenCustomize, out characterValue);
             voiceButton = ValueRow("VOICE & MIC", "", OpenVoice, out voiceValue);
             voiceButton.name = "NMM_VOICE"; // Its label has an ampersand, awkward in a name passed about.
+            // How the Nun hears: the host chooses, guests see the choice.
+            hearingTitle = Guide("HearingTitle", "");
+            hearingRow = ValueRow("NUN HEARING", "", ToggleHearing, out hearingValue);
+            var hearingColors = hearingRow.colors; hearingColors.disabledColor = hearingColors.normalColor; hearingRow.colors = hearingColors; // Not greyed for guests.
+            hearingNote = Guide("HearingNote", "");
             Anchor(voiceValue.rectTransform, 0.5f, 0f, 1f, 1f); // The microphone's full name, shrunk to fit beside the label.
             VoiceText.FitText(voiceValue);
             creditsButton = Row("MOD CREDITS", OpenCredits);
@@ -505,6 +512,9 @@ namespace NunMassacre.Multiplayer.Ui
         {
             if (customizePage.gameObject.activeSelf) { UpdateCustomize(); return; }
             if (voicePage.gameObject.activeSelf) { UpdateVoice(); return; }
+            var selected = EventSystem.current ? EventSystem.current.currentSelectedGameObject : null;
+            if (selected == hearingRow.gameObject && (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)
+                || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D))) ToggleHearing();
             if (Time.unscaledTime >= nextRefresh) Refresh();
         }
 
@@ -540,6 +550,12 @@ namespace NunMassacre.Multiplayer.Ui
                 Players.RemotePlayers.ValidCharacter(plugin.Character.Value))];
             var voice = plugin.Session.Voice;
             voiceValue.text = !voice.Enabled.Value ? "OFF" : VoiceText.MicrophoneName(voice);
+            bool coop = session.CoopHearing;
+            foreach (var part in new Component[] { hearingTitle, hearingRow, hearingNote }) part.gameObject.SetActive(connected);
+            hearingRow.interactable = host;
+            hearingTitle.text = host ? "YOU CHOOSE THIS AS THE HOST:" : "THE HOST CHOOSES THIS:";
+            hearingValue.text = host ? (coop ? "< CO-OP >" : "< ORIGINAL >") : (coop ? "CO-OP" : "ORIGINAL");
+            hearingNote.text = coop ? "VOICES AND FOOTSTEPS CARRY TO HER." : "SHE HEARS AS IN THE GAME ALONE.";
 
             RefreshSlots(session, connected);
             LayOut(active, connected);
@@ -617,7 +633,7 @@ namespace NunMassacre.Multiplayer.Ui
                 var tags = new List<string>();
                 if (player.Key == 1) tags.Add("HOST");
                 if (player.Value[2] == "1") tags.Add("YOU");
-                label.text = (name.Length > 14 ? name.Substring(0, 13) + "." : name) + (tags.Count > 0 ? " (" + string.Join(", ", tags.ToArray()) + ")" : "");
+                label.text = (name.Length > 11 ? name.Substring(0, 10) + "." : name) + (tags.Count > 0 ? " (" + string.Join(", ", tags.ToArray()) + ")" : "");
                 label.color = session.Voice.IsTalking(player.Key) ? new Color(0.86f, 0.18f, 0.16f) : TextColor;
                 slotValues[i].text = Players.RemotePlayers.CharacterNames[Array.IndexOf(Players.RemotePlayers.CharacterIds,
                     Players.RemotePlayers.ValidCharacter(player.Value[1]))];
@@ -644,7 +660,7 @@ namespace NunMassacre.Multiplayer.Ui
                 ? new List<Component> { joinTitle, inviteRow, localNote, null, playersTitle, slots[0], slots[1], slots[2], slots[3] }
                 : new List<Component> { hostIntro, hostButton, hostNote, null, upnpNote, active ? leaveButton : null };
             var right = connected
-                ? new List<Component> { settingsIntro, nameRow.transform, characterButton, voiceButton }
+                ? new List<Component> { settingsIntro, nameRow.transform, characterButton, voiceButton, null, hearingTitle, hearingRow, hearingNote }
                 : new List<Component> { joinIntro, addressRow.transform, null, lanTitle, lanButtons[0], lanButtons[1], lanButtons[2] };
             var leftOrder = Fill(left, leftMin, leftMax, top);
             var rightOrder = Fill(right, rightMin, rightMax, top);
@@ -828,6 +844,15 @@ namespace NunMassacre.Multiplayer.Ui
             if (voicePage && voicePage.gameObject.activeSelf) { voicePage.gameObject.SetActive(false); content.gameObject.SetActive(true); }
             plugin.Session.Voice.MicTest = false;
             DisposePreview();
+        }
+
+        /// <summary>Host: CO-OP or ORIGINAL hearing; every guest is told.</summary>
+        private void ToggleHearing()
+        {
+            if (!plugin.Session.IsHost) return;
+            plugin.OriginalHearing.Value = !plugin.OriginalHearing.Value;
+            plugin.Session.HearingChanged();
+            Refresh();
         }
 
         private void StartGame()

@@ -31,13 +31,13 @@ Windows Firewall may ask the first time you host: allow it.
 2. **Friends:** MULTIPLAYER → enter your name → click the invite code box and paste the code (**Ctrl+V**). You join straight away. On the same network as the host, you can instead select the host's game in the list under the box.
 3. **Host:** **START GAME**, then choose the difficulty and scenario as usual. Everyone starts together.
 
-In the lobby, **YOUR SETTINGS** sets your character (Mike, Maddy, Mark or Maverick), your voice and your microphone. Friends can join a game that is already running. If the host quits, the game ends for everyone.
+In the lobby, **YOUR SETTINGS** sets your name, your character (Mike, Maddy, Mark or Maverick), your voice and your microphone. The host also chooses **NUN HEARING**: **CO-OP** (the default: voices and footsteps carry to her through the building) or **ORIGINAL** (she hears as in the game alone). Friends can join a game that is already running. If the host quits, the game ends for everyone.
 
 ## How co-op plays
 
 - **Knocked down, not killed.** At 0 health you go down and can crawl. A teammate revives you by holding **Interact** next to you (faster with a first aid kit). You have five minutes. Out of lives, you spectate until the next level.
 - **The Nun hunts everyone,** and goes after whoever is alone. Shout to pull her off a friend.
-- **She hears you.** Voices, footsteps, whistles and dropped things travel through the building to her, further the harder the difficulty.
+- **She hears you** (with CO-OP hearing). Voices, footsteps, whistles and dropped things travel through the building to her, further the harder the difficulty.
 - **Proximity voice chat,** muffled through walls and echoing in big rooms. Open mic or push to talk (**V**).
 - **Hide two to a bed.**
 - **Shared puzzles, scares and endings.** Anyone can work on any puzzle. Scares and endings wait for the whole team, then happen to everyone at once.

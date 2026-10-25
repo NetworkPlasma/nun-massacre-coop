@@ -87,7 +87,7 @@ namespace NunMassacre.Multiplayer.Gameplay
         private Voice.RaytracedAcoustics Rays { get { return session.Voice == null ? null : session.Voice.Raytraced; } }
         internal bool Raytraced { get { var rays = Rays; return rays != null && rays.Running; } }
         internal float Sharpness { get { return Reach(DifficultyController.CurrentDifficulty); } }
-        internal bool Active { get { return session.Active && session.IsHost && session.Ready; } }
+        internal bool Active { get { return session.Active && session.IsHost && session.Ready && session.CoopHearing; } }
 
         internal void Update()
         {

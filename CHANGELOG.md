@@ -12,7 +12,7 @@ The first public release of the multiplayer mod for Nun Massacre Definitive Edit
 - **A Nun who hunts every player and hears through the building.** Raytraced acoustics (Powered by Vercidium Audio)
   carry voices, footsteps, whistles, gunshots and dropped or thrown things to her through walls, doors and floors, and
   she hears more the harder the difficulty. She stops to listen, turns to a sound, and comes to where it was made to
-  search.
+  search. The host can choose ORIGINAL hearing in the lobby instead: as in the game alone.
 - **Proximity voice chat** on the same acoustics, with the space you are in answering your own voice.
 - **Knocked down, not killed:** crawl, call for help and be revived (faster with a first aid kit) before a five-minute
   bleed-out. Out of lives, spectate until the next level.

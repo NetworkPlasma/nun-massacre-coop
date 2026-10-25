@@ -12,6 +12,7 @@ namespace NunMassacre.Multiplayer
         public string build;
         public string text;
         public string settings; // The host's PLAY choices: scenario, Nun skin, item randomisation and its seed.
+        public bool originalHearing; // The host's lobby choice: the Nun hears as in the game alone (else co-op).
         public string scene;
         public int epoch;
         public int peer;
