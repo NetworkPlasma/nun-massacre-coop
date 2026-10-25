@@ -58,13 +58,14 @@ namespace NunMassacre.Multiplayer.Ui
         private const float RowHeight = 0.058f, Gap = 0.025f, Top = 0.85f;
         private Plugin plugin;
         private GameObject main, playSettings;
-        private Button entry, hostButton, joinButton, startButton, leaveButton, backButton, inviteRow, characterButton, creditsButton;
-        private Text leaveLabel, status, lanTitle, hostNote, joinTitle, playersTitle, inviteValue, characterValue;
+        private Button entry, hostButton, startButton, leaveButton, backButton, inviteRow, characterButton, creditsButton;
+        private Text leaveLabel, status, lanTitle, hostIntro, hostNote, upnpNote, joinIntro, joinTitle, localNote, playersTitle,
+            settingsIntro, inviteValue, characterValue;
         private readonly Button[] lanButtons = new Button[3];
         private readonly Text[] lanValues = new Text[3];
         private readonly Network.LanDiscovery.Game[] lanGames = new Network.LanDiscovery.Game[3];
-        private InputField nameField, addressField, portField;
-        private GameObject nameRow, addressRow, portRow;
+        private InputField nameField, addressField;
+        private GameObject nameRow, addressRow;
         // Four pages: the connect/lobby page, the character page, voice and microphone (as in SETTINGS > MULTIPLAYER) and the credits.
         private Transform buildParent, content, customizePage, creditsPage, voicePage;
         private Button voiceButton, voiceBack, voiceChatRow, voiceTalkRow, voiceKeyRow, voiceMicRow, voiceLevelRow,
@@ -172,16 +173,16 @@ namespace NunMassacre.Multiplayer.Ui
             Title("- MULTIPLAYER -");
             nameField = FieldRow("YOUR NAME", plugin.PlayerName.Value, 24, InputField.ContentType.Standard, out nameRow);
             if (!IsInvite(plugin.Address.Value)) plugin.Address.Value = ""; // Only an invite code is kept, never an address.
-            addressField = FieldRow("INVITE CODE", plugin.Address.Value, 64, InputField.ContentType.Standard, out addressRow);
-            portField = FieldRow("PORT", plugin.Port.Value.ToString(), 5, InputField.ContentType.IntegerNumber, out portRow);
             nameField.onEndEdit.AddListener(SaveName);
-            addressField.onEndEdit.AddListener(value => plugin.Address.Value = IsInvite(value.Trim()) ? value.Trim() : "");
+            // Each box says what it asks of the player.
+            hostIntro = Guide("HostIntro", "BE THE HOST AND INVITE FRIENDS:");
             hostButton = Row("HOST GAME", HostGame);
-            joinButton = Row("JOIN GAME", JoinGame);
             Framed(hostButton);
-            Framed(joinButton);
-            hostNote = SubLabel("HostNote", "FRIENDS JOIN WITH YOUR INVITE CODE");
-            lanTitle = SubLabel("LanTitle", "ON YOUR NETWORK");
+            hostNote = Guide("HostNote", "YOU GET AN INVITE CODE TO SEND THEM.");
+            upnpNote = Guide("UpnpNote", "ONLINE NEEDS UPNP ON IN YOUR ROUTER.");
+            joinIntro = Guide("JoinIntro", "PASTE YOUR FRIEND'S INVITE CODE:");
+            addressField = InviteBox(out addressRow);
+            lanTitle = SubLabel("LanTitle", "OR JOIN A GAME ON YOUR NETWORK:");
             for (int i = 0; i < lanButtons.Length; i++)
             {
                 int slot = i;
@@ -189,8 +190,10 @@ namespace NunMassacre.Multiplayer.Ui
             }
             // In a session: what to tell friends, and who is here.
             inviteRow = ValueRow("INVITE CODE", "", CopyInvite, out inviteValue);
-            joinTitle = SubLabel("JoinTitle", "FRIENDS JOIN WITH");
+            joinTitle = Guide("JoinTitle", "SEND YOUR FRIENDS THIS INVITE CODE:");
+            localNote = Guide("LocalNote", "FRIENDS ON YOUR NETWORK CAN JOIN.");
             playersTitle = SubLabel("PlayersTitle", "PLAYERS");
+            settingsIntro = Guide("SettingsIntro", "HOW YOUR TEAMMATES SEE AND HEAR YOU:");
             for (int i = 0; i < slots.Length; i++) slots[i] = InfoRow("SLOT " + (i + 1), out slotValues[i]);
             leftBox = MakeBox("LeftBox", "LOBBY");
             rightBox = MakeBox("RightBox", "GAME");
@@ -496,17 +499,21 @@ namespace NunMassacre.Multiplayer.Ui
             Session session = plugin.Session;
             bool active = session.Active, connected = session.Connected, host = session.IsHost;
             bool invite = host && !string.IsNullOrEmpty(session.Invite);
-            nameRow.SetActive(!active); addressRow.SetActive(!active); portRow.SetActive(!active);
+            nameRow.SetActive(!active); addressRow.SetActive(!active);
             hostButton.gameObject.SetActive(!active);
-            joinButton.gameObject.SetActive(!active);
+            foreach (var note in new[] { hostIntro, hostNote, upnpNote, joinIntro }) note.gameObject.SetActive(!active);
             RefreshLan(!active && gameObject.activeInHierarchy);
             inviteRow.gameObject.SetActive(invite);
             if (invite) inviteValue.text = session.Invite;
             // Ready to paste to a friend.
             if (invite && copiedInvite != session.Invite) { GUIUtility.systemCopyBuffer = session.Invite; copiedInvite = session.Invite; }
-            hostNote.gameObject.SetActive(!active);
-            joinTitle.gameObject.SetActive(invite && connected);
+            // The host is told what to send friends, or that the code is coming, or why there is none.
+            joinTitle.gameObject.SetActive(host && connected);
+            joinTitle.text = invite ? "SEND YOUR FRIENDS THIS INVITE CODE:"
+                : session.AskingRouter ? "GETTING YOUR INVITE CODE..." : "NO CODE: TURN ON UPNP IN YOUR ROUTER.";
+            localNote.gameObject.SetActive(host && connected && !invite && !session.AskingRouter);
             playersTitle.gameObject.SetActive(connected);
+            settingsIntro.gameObject.SetActive(connected);
             // Character and voice belong to the lobby: once in a session, before the game starts.
             characterButton.gameObject.SetActive(connected);
             voiceButton.gameObject.SetActive(connected);
@@ -525,14 +532,16 @@ namespace NunMassacre.Multiplayer.Ui
             if (!active)
                 text = !string.IsNullOrEmpty(message) ? message
                     : session.Status != "Offline" && !string.IsNullOrEmpty(session.Status) ? session.Status.ToUpperInvariant()
-                    : "HOST A GAME, OR JOIN ONE WITH THE HOST'S INVITE CODE.";
+                    : "TYPE YOUR NAME, THEN HOST A GAME OR JOIN A FRIEND'S WITH THEIR INVITE CODE.";
             else if (!connected)
                 text = joiningGame != null ? ("CONNECTING TO " + joiningGame + "'S GAME...").ToUpperInvariant()
                     : IsInvite(plugin.Address.Value) ? "CONNECTING WITH THE INVITE CODE..." : "CONNECTING...";
             else if (host)
-                text = invite ? (copiedInvite == session.Invite ? "INVITE CODE COPIED. FRIENDS ANYWHERE PASTE IT AND JOIN." : "SELECT THE INVITE CODE TO COPY IT.")
+                text = invite ? (copiedInvite == session.Invite ? "THE INVITE CODE IS COPIED: PASTE IT TO YOUR FRIENDS." : "SELECT THE INVITE CODE TO COPY IT.")
+                        + " SELECT START GAME WHEN EVERYONE IS HERE."
+                    : session.AskingRouter ? "GETTING YOUR INVITE CODE FROM YOUR ROUTER..."
                     : (session.OnlineStatus ?? "").ToUpperInvariant();
-            else text = "CONNECTED. WAITING FOR THE HOST TO START.";
+            else text = "YOU'RE IN. THE HOST STARTS THE GAME WHEN EVERYONE IS HERE.";
             if (connected && !string.IsNullOrEmpty(message)) text = message;
             status.text = text;
             var selected = EventSystem.current ? EventSystem.current.currentSelectedGameObject : null;
@@ -600,9 +609,10 @@ namespace NunMassacre.Multiplayer.Ui
         }
 
         /// <summary>
-        /// The page as it stands. Before a session: the player's name over both boxes, HOST A GAME (the port and the host
-        /// button) and JOIN A GAME (the invite code, the join button and the games found on this network). In a session: the
-        /// LOBBY (how friends join, for the host, then the four players) and YOUR SETTINGS (character, voice and microphone).
+        /// The page as it stands. Before a session: the player's name over both boxes, HOST A GAME (the host button) and JOIN
+        /// A GAME (the invite code box and the games found on this network), each saying what it asks. In a session: the
+        /// LOBBY (the invite code to send, for the host, then the four players) and YOUR SETTINGS (character, voice and
+        /// microphone).
         /// The page's buttons along the foot. Up and down go along a box, left and right across.
         /// </summary>
         private void LayOut(bool active, bool connected)
@@ -615,11 +625,11 @@ namespace NunMassacre.Multiplayer.Ui
             leftBox.Header.text = connected ? "LOBBY  " + plugin.Session.Roster().Count + "/4" : active ? "CONNECTING" : "HOST A GAME";
             rightBox.Header.text = connected ? "YOUR SETTINGS" : "JOIN A GAME";
             var left = connected
-                ? new List<Component> { joinTitle, inviteRow, null, playersTitle, slots[0], slots[1], slots[2], slots[3] }
-                : new List<Component> { portRow.transform, null, hostButton, hostNote, active ? leaveButton : null };
+                ? new List<Component> { joinTitle, inviteRow, localNote, null, playersTitle, slots[0], slots[1], slots[2], slots[3] }
+                : new List<Component> { hostIntro, hostButton, hostNote, null, upnpNote, active ? leaveButton : null };
             var right = connected
-                ? new List<Component> { characterButton, voiceButton }
-                : new List<Component> { addressRow.transform, null, joinButton, null, lanTitle, lanButtons[0], lanButtons[1], lanButtons[2] };
+                ? new List<Component> { settingsIntro, characterButton, voiceButton }
+                : new List<Component> { joinIntro, addressRow.transform, null, lanTitle, lanButtons[0], lanButtons[1], lanButtons[2] };
             var leftOrder = Fill(left, leftMin, leftMax, top);
             var rightOrder = Fill(right, rightMin, rightMax, top);
             // Along the foot: what this page can do.
@@ -728,35 +738,40 @@ namespace NunMassacre.Multiplayer.Ui
 
         private void HostGame()
         {
-            int port;
-            if (!ReadPort(out port)) return;
             SaveName(nameField.text);
             message = "";
-            plugin.Session.Host(port);
+            plugin.Session.Host(Port);
             Refresh();
         }
 
+        private const string WrongCode = "THAT INVITE CODE IS NOT RIGHT. CHECK IT WITH THE HOST.";
+
+        /// <summary>Joins with what is in the invite code box: an invite code, or an address (a VPN's) typed there.</summary>
         private void JoinGame()
         {
-            int port;
-            if (!ReadPort(out port)) return;
             string address = addressField.text.Trim();
-            if (address.Length == 0) { message = "ENTER THE HOST'S INVITE CODE OR ADDRESS FIRST."; Refresh(); return; }
+            if (address.Length == 0) { message = "PASTE THE HOST'S INVITE CODE IN THE BOX FIRST."; Refresh(); return; }
             SaveName(nameField.text);
             plugin.Address.Value = IsInvite(address) ? address : "";
             message = "";
             joiningGame = null;
             IPAddress invited; int invitePort, key;
             if (InviteCode.TryParse(address, out invited, out invitePort, out key)) plugin.Session.Join(invited.ToString(), invitePort, key);
-            else if (address.Replace("-", "").Replace(" ", "").Length == 16 && address.IndexOf('.') < 0)
+            else if (LooksLikeCode(address))
             {
-                message = "THAT INVITE CODE IS NOT RIGHT. CHECK IT WITH THE HOST.";
+                message = WrongCode;
                 Refresh();
                 return;
             }
-            else plugin.Session.Join(address, port);
+            else plugin.Session.Join(address, Port);
             Refresh();
         }
+
+        /// <summary>Sixteen letters and digits, with or without dashes: meant as an invite code, not an address.</summary>
+        private static bool LooksLikeCode(string text) { return text.Replace("-", "").Replace(" ", "").Length == 16 && text.IndexOf('.') < 0; }
+
+        /// <summary>The port in the settings file (the router forwards it; nobody needs to see it here).</summary>
+        private int Port { get { int port = plugin.Port.Value; return port >= 1024 && port <= 65535 ? port : 27845; } }
 
         // LAN browser: games announced by hosts on this network, one click to join.
         private void RefreshLan(bool show)
@@ -765,7 +780,7 @@ namespace NunMassacre.Multiplayer.Ui
             lanTitle.gameObject.SetActive(show);
             if (show) discovery.Listen(); else discovery.StopListening();
             var games = show ? discovery.Games(plugin.BuildHash) : new List<Network.LanDiscovery.Game>();
-            lanTitle.text = games.Count == 0 ? "SEARCHING YOUR NETWORK..." : "ON YOUR NETWORK";
+            lanTitle.text = games.Count == 0 ? "LOOKING FOR GAMES ON YOUR NETWORK..." : "OR JOIN A GAME ON YOUR NETWORK:";
             for (int i = 0; i < lanButtons.Length; i++)
             {
                 lanGames[i] = i < games.Count ? games[i] : null;
@@ -829,18 +844,6 @@ namespace NunMassacre.Multiplayer.Ui
             Select(entry);
         }
 
-        private bool ReadPort(out int port)
-        {
-            if (!int.TryParse(portField.text, out port) || port < 1024 || port > 65535)
-            {
-                message = "CHOOSE A PORT FROM 1024 TO 65535.";
-                Refresh();
-                return false;
-            }
-            plugin.Port.Value = port;
-            return true;
-        }
-
         private void SaveName(string value)
         {
             string name = new string((value ?? "").Where(c => !char.IsControl(c) && c != '<' && c != '>').Take(24).ToArray()).Trim();
@@ -867,6 +870,14 @@ namespace NunMassacre.Multiplayer.Ui
             return text;
         }
 
+        /// <summary>A line inside a box telling the player what it asks of them: as a small heading, but brighter.</summary>
+        private Text Guide(string name, string value)
+        {
+            var text = SubLabel(name, value);
+            text.color = new Color(TextColor.r, TextColor.g, TextColor.b, 0.85f);
+            return text;
+        }
+
         /// <summary>A small heading inside a box, over the rows it names.</summary>
         private Text SubLabel(string name, string value)
         {
@@ -879,20 +890,58 @@ namespace NunMassacre.Multiplayer.Ui
         /// <summary>An action rather than a setting: its name centred in a thin frame, so it reads as something to press.</summary>
         private static void Framed(Button button)
         {
-            var frame = new GameObject("NMM_Frame", typeof(RectTransform)).GetComponent<RectTransform>();
-            frame.SetParent(button.transform, false);
-            frame.SetAsFirstSibling();
-            frame.anchorMin = new Vector2(0.15f, 0.06f); frame.anchorMax = new Vector2(0.85f, 0.94f);
-            frame.offsetMin = frame.offsetMax = Vector2.zero;
-            Bar(frame, "Top", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -1.5f), Vector2.zero, 0.8f);
-            Bar(frame, "Bottom", new Vector2(0f, 0f), new Vector2(1f, 0f), Vector2.zero, new Vector2(0f, 1.5f), 0.8f);
-            Bar(frame, "Left", new Vector2(0f, 0f), new Vector2(0f, 1f), Vector2.zero, new Vector2(1.5f, 0f), 0.8f);
-            Bar(frame, "Right", new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-1.5f, 0f), Vector2.zero, 0.8f);
+            Frame(button.transform, 0.15f, 0.85f);
             var label = button.GetComponentInChildren<Text>(true);
             if (!label) return;
             label.alignment = TextAnchor.MiddleCenter;
             label.rectTransform.anchorMin = Vector2.zero; label.rectTransform.anchorMax = Vector2.one;
             label.rectTransform.offsetMin = label.rectTransform.offsetMax = Vector2.zero;
+        }
+
+        /// <summary>A thin frame across part of a row (from left to right of its width), behind what the row holds.</summary>
+        private static void Frame(Transform row, float left, float right)
+        {
+            var frame = new GameObject("NMM_Frame", typeof(RectTransform)).GetComponent<RectTransform>();
+            frame.SetParent(row, false);
+            frame.SetAsFirstSibling();
+            frame.anchorMin = new Vector2(left, 0.06f); frame.anchorMax = new Vector2(right, 0.94f);
+            frame.offsetMin = frame.offsetMax = Vector2.zero;
+            Bar(frame, "Top", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -1.5f), Vector2.zero, 0.8f);
+            Bar(frame, "Bottom", new Vector2(0f, 0f), new Vector2(1f, 0f), Vector2.zero, new Vector2(0f, 1.5f), 0.8f);
+            Bar(frame, "Left", new Vector2(0f, 0f), new Vector2(0f, 1f), Vector2.zero, new Vector2(1.5f, 0f), 0.8f);
+            Bar(frame, "Right", new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-1.5f, 0f), Vector2.zero, 0.8f);
+        }
+
+        /// <summary>
+        /// The invite code box: one framed field and nothing else to press. A whole, valid code joins as soon as it is in the
+        /// box (pasted or typed); a mistyped one says so. Enter joins with whatever is there, so a VPN address works too.
+        /// </summary>
+        private InputField InviteBox(out GameObject row)
+        {
+            var field = FieldRow("INVITE CODE", "", 64, InputField.ContentType.Standard, out row);
+            var label = field.GetComponentsInChildren<Text>(true).FirstOrDefault(t => t != field.textComponent && t != field.placeholder);
+            if (label) label.gameObject.SetActive(false);
+            foreach (var text in new[] { field.textComponent, (Text)field.placeholder })
+            {
+                Anchor(text.rectTransform, 0.08f, 0f, 0.92f, 1f);
+                text.alignment = TextAnchor.MiddleCenter;
+            }
+            ((Text)field.placeholder).text = "CLICK HERE, THEN CTRL+V";
+            Frame(field.transform, 0.05f, 0.95f);
+            field.onValueChanged.AddListener(value =>
+            {
+                string code = value.Trim();
+                if (plugin.Session.Active) return;
+                if (IsInvite(code)) { JoinGame(); return; }
+                string said = LooksLikeCode(code) ? WrongCode : message == WrongCode ? "" : message;
+                if (said != message) { message = said; Refresh(); }
+            });
+            field.onEndEdit.AddListener(value =>
+            {
+                bool enter = Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter);
+                if (enter && !plugin.Session.Active && value.Trim().Length > 0) JoinGame();
+            });
+            return field;
         }
 
         private Text Label(string name, string value, int size, TextAnchor alignment)
@@ -955,7 +1004,7 @@ namespace NunMassacre.Multiplayer.Ui
             text.text = "";
             Text placeholder = Object.Instantiate(text.gameObject, copy, false).GetComponent<Text>();
             placeholder.name = "Placeholder";
-            placeholder.text = type == InputField.ContentType.IntegerNumber ? "27845" : label == "INVITE CODE" ? "PASTE IT HERE" : "...";
+            placeholder.text = label == "YOUR NAME" ? "TYPE YOUR NAME" : "...";
             placeholder.color = new Color(TextColor.r, TextColor.g, TextColor.b, 0.35f);
 
             var input = copy.gameObject.AddComponent<InputField>();

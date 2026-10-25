@@ -21,14 +21,14 @@ If you can't turn it on:
 
 - let a friend whose router has UPnP host, or
 - forward TCP port **27845** to your PC in the router's settings (friends then join with your public IP address), or
-- all join the same free virtual LAN (Radmin VPN, ZeroTier or Tailscale) and type the host's VPN address (shown in the VPN app) into **INVITE CODE**.
+- all join the same free virtual LAN (Radmin VPN, ZeroTier or Tailscale) and type the host's VPN address (shown in the VPN app) into the invite code box, then press **Enter**.
 
 Windows Firewall may ask the first time you host: allow it.
 
 ## Playing together
 
 1. **Host:** MULTIPLAYER → enter **YOUR NAME** → **HOST GAME**. The invite code is copied to your clipboard; send it to your friends.
-2. **Friends:** MULTIPLAYER → enter your name → paste the code into **INVITE CODE** → **JOIN GAME**. On the same network as the host, just select the host's game in the list under it.
+2. **Friends:** MULTIPLAYER → enter your name → click the invite code box and paste the code (**Ctrl+V**). You join straight away. On the same network as the host, you can instead select the host's game in the list under the box.
 3. **Host:** **START GAME**, then choose the difficulty and scenario as usual. Everyone starts together.
 
 In the lobby, **YOUR SETTINGS** sets your character (Mike, Maddy or Mark), your voice and your microphone. Friends can join a game that is already running. If the host quits, the game ends for everyone.

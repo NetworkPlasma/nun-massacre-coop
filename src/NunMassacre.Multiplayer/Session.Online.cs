@@ -17,6 +17,8 @@ namespace NunMassacre.Multiplayer
         internal string Invite { get; private set; }
         /// <summary>Hosting: how online play stands, for the lobby ("" when not hosting).</summary>
         internal string OnlineStatus { get; private set; }
+        /// <summary>Hosting: the router is still being asked for the port (the invite code is on its way).</summary>
+        internal bool AskingRouter { get; private set; }
 
         /// <summary>Automated tests: "off" (the default for test runs), "live", or a fake router's description URL.</summary>
         internal static string TestRouter;
@@ -26,13 +28,13 @@ namespace NunMassacre.Multiplayer
 
         private void OpenRouter(int port)
         {
-            Invite = null; wrongKeys.Clear();
+            Invite = null; wrongKeys.Clear(); AskingRouter = false;
             inviteKey = TestInviteKey > 0 ? TestInviteKey : UnityEngine.Random.Range(1, 1 << 24);
             if (TestRouter == "off") { OnlineStatus = "Online play is skipped in automated tests."; return; }
             if (!plugin.OpenRouterPort.Value) { OnlineStatus = "Online play is off (OpenRouterPort in the settings file)."; return; }
             Uri fake = TestRouter != null && TestRouter.StartsWith("http", StringComparison.Ordinal) ? new Uri(TestRouter) : null;
             OnlineStatus = "Asking your router to open port " + port + " for online play...";
-            routerResult = null; routerEpoch = hostingRun;
+            routerResult = null; routerEpoch = hostingRun; AskingRouter = true;
             System.Threading.ThreadPool.QueueUserWorkItem(delegate
             {
                 RouterMapping result;
@@ -47,7 +49,7 @@ namespace NunMassacre.Multiplayer
             var result = routerResult;
             if (result != null)
             {
-                routerResult = null;
+                routerResult = null; AskingRouter = false;
                 // Stopped hosting meanwhile.
                 if (!Active || !IsHost || routerEpoch != hostingRun) { System.Threading.ThreadPool.QueueUserWorkItem(delegate { RouterPort.Close(result); }); }
                 else
@@ -83,7 +85,7 @@ namespace NunMassacre.Multiplayer
         private void CloseRouter(bool wait)
         {
             var mapping = router;
-            router = null; Invite = null; OnlineStatus = "";
+            router = null; Invite = null; OnlineStatus = ""; AskingRouter = false;
             if (mapping == null) return;
             if (wait) RouterPort.Close(mapping); // Quitting: the worker thread could be cut off.
             else System.Threading.ThreadPool.QueueUserWorkItem(delegate { RouterPort.Close(mapping); });

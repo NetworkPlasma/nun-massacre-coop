@@ -51,14 +51,14 @@ loader off so the game starts exactly as it came.
 ## Playing together
 
 - **Host:** MULTIPLAYER → enter a name → HOST GAME. Send the invite code (already on your clipboard) to your friends.
-- **Friends:** MULTIPLAYER → paste the code into INVITE CODE → JOIN GAME. On the host's network, just select their game
-  in the list.
+- **Friends:** MULTIPLAYER → click the invite code box and paste the code (Ctrl+V): you join straight away. On the
+  host's network, you can instead select their game in the list.
 - **Host:** START GAME, then pick difficulty and scenario as usual. Friends can join a game that is already running.
 
 **Playing online: the host needs UPnP turned on in their router's settings.** Hosting then opens the game's port by
 itself. Most routers have it on already; if the lobby says the port did not open, turn on UPnP in the router's settings
 page and host again. Otherwise let a friend host, forward TCP port 27845 yourself, or all join a free virtual LAN (Radmin
-VPN, ZeroTier, Tailscale) and type the host's VPN address into INVITE CODE. Windows Firewall may ask the first time you host: allow it.
+VPN, ZeroTier, Tailscale) and type the host's VPN address into the invite code box, then press Enter. Windows Firewall may ask the first time you host: allow it.
 
 ## Controls
 
