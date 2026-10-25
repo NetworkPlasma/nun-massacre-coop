@@ -14,7 +14,7 @@ in [VALIDATION.md](VALIDATION.md).
 | Loader | BepInEx 5.4.23.3 (`BepInEx_win_x64_5.4.23.3.zip` SHA-256 `41a089e5b1b1f0713b331346baf6677b1184c69eabebf51101097954e854c749`), inside the setup |
 | Raytracer | Vercidium Audio 1.10.1, `vaudionative.dll` SHA-256 `d58a5a4dc196eca34941b31b465d395fdfb69af73595d423f89b8f8dfaa66c7e` |
 | Plugin | `NunMassacre.Multiplayer.dll` SHA-256 `f102cf487e815a0b078b08f4a9a18d799a15617bc3539328efea658eb9c1e524` |
-| Setup | `NunMassacreCoop-Setup-1.0.0.exe` SHA-256 `6193bd5ec1e1459c203330f57881308b7363fec65e0e2bb5458a9646ff030d1f` |
+| Setup | `NunMassacreCoop-Setup-1.0.0.exe` SHA-256 `1a1da37d24ceb49203f28cccf477fb63aadd3da106791f60082c3210adf9ba4c` |
 | Archives | `NunMassacreCoop-1.0.0.zip` and `NunMassacreCoop-Source-1.0.0.zip`: their SHA-256 are in `SHA256SUMS-1.0.0.txt` beside them |
 
 The setup carries the same plugin, raytracer and loader as the player zip; each file in the zip is listed with its

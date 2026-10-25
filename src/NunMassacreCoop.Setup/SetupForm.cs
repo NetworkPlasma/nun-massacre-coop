@@ -75,7 +75,7 @@ namespace NunMassacreCoop.Setup
             Button(play, "PLAY", R(486, 594, 100, 42), (o, e) => Play());
             Button(install, "INSTALL", R(596, 594, 140, 42), (o, e) => Run(true));
 
-            footer.Text = "Nun Massacre © Puppet Combo. Fan-made mod, not endorsed by Puppet Combo. Includes BepInEx 5 (LGPL-2.1).";
+            footer.Text = "Nun Massacre © Puppet Combo. Multiplayer mod by NetworkPlasma. Includes BepInEx 5 (LGPL-2.1).";
             Style(footer, R(24, 644, 712, 16), Art.Faint, ContentAlignment.MiddleLeft);
             Refont();
 
