@@ -6,7 +6,7 @@ A co-op multiplayer mod for **Nun Massacre Definitive Edition (Windows, 2022.06.
 
 ## Install
 
-1. Run **NunMassacreCoop-Setup.exe**. Put it in the game folder, next to `Nun Massacre.exe`, or run it from anywhere: it finds Nun Massacre on the PC by itself (Steam, GOG, Epic, itch, or a folder you unzipped it to). If it doesn't, press **BROWSE** and pick `Nun Massacre.exe`, or drop the game's folder on the window.
+1. Run **NunMassacreCoop-Setup.exe**. Put it in the game folder, next to `Nun Massacre.exe`, or run it from anywhere: it finds Nun Massacre on the PC by itself (installed with the itch app, or unzipped from an itch.io or Patreon download). If it doesn't, press **BROWSE** and pick `Nun Massacre.exe`, or drop the game's folder on the window.
 2. Press **INSTALL**. It installs the BepInEx 5.4.23.3 loader (carried inside the setup and checked against its SHA-256) and the mod. It never changes the game's own files and won't overwrite another mod loader. If the game is somewhere protected, such as Program Files, Windows asks for permission.
 3. Press **PLAY** and choose **MULTIPLAYER** on the main menu.
 

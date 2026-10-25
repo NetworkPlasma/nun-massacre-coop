@@ -41,7 +41,7 @@ game together: the opening, every puzzle, every ending and the alternate scenari
 ## Install
 
 1. Download **NunMassacreCoop-1.0.0.zip** and unzip it anywhere.
-2. Run **NunMassacreCoop-Setup.exe**. It finds the game by itself (Steam, GOG, Epic, itch or a folder you unzipped it to);
+2. Run **NunMassacreCoop-Setup.exe**. It finds the game by itself (installed with the itch app, or unzipped from an itch.io or Patreon download);
    if not, press BROWSE and pick `Nun Massacre.exe`.
 3. Press **INSTALL**, then **PLAY**, and choose **MULTIPLAYER** on the main menu.
 
