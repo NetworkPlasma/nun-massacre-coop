@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The player's setup program: one .exe carrying the mod and the BepInEx loader. .NET Framework 4.7.2 is part of
+       Windows 10 and 11, so it runs without installing anything. scripts\package.ps1 passes the version and the files. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+    <AssemblyName>NunMassacreCoop-Setup</AssemblyName>
+    <RootNamespace>NunMassacreCoop.Setup</RootNamespace>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Version Condition="'$(Version)' == ''">0.0.0</Version>
+    <Product>Nun Massacre Multiplayer Mod</Product>
+    <AssemblyTitle>Nun Massacre Multiplayer Mod Setup</AssemblyTitle>
+    <Description>Installs the Nun Massacre multiplayer (co-op) mod.</Description>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <PluginDll Condition="'$(PluginDll)' == ''">..\NunMassacre.Multiplayer\bin\Release\NunMassacre.Multiplayer.dll</PluginDll>
+    <LoaderZip Condition="'$(LoaderZip)' == ''">..\..\.tools\BepInEx_win_x64_5.4.23.3.zip</LoaderZip>
+    <RaytracerDll Condition="'$(RaytracerDll)' == ''">..\..\vendor\vaudio\3d\native\production\windows\vaudionative.dll</RaytracerDll>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <EmbeddedResource Include="$(PluginDll)" LogicalName="Payload.Plugin" />
+    <EmbeddedResource Include="$(LoaderZip)" LogicalName="Payload.Loader" />
+    <EmbeddedResource Include="$(RaytracerDll)" LogicalName="Payload.Raytracer" />
+    <EmbeddedResource Include="..\..\README.md" LogicalName="Payload.Readme" />
+    <EmbeddedResource Include="..\..\CHANGELOG.md" LogicalName="Payload.Changelog" />
+    <EmbeddedResource Include="icon-source.png" LogicalName="Art.Nun" />
+  </ItemGroup>
+</Project>
