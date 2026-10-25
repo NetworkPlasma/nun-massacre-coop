@@ -16,10 +16,10 @@ namespace NunMassacre.Multiplayer.Players
     public sealed class RemotePlayers : IDisposable
     {
         // ---------- Character catalogue (assets embedded from Players/Assets) ----------
-        internal static readonly string[] CharacterIds = { "male_casual", "secretary", "scientist" };
-        internal static readonly string[] CharacterNames = { "MIKE", "MADDY", "MARK" };
+        internal static readonly string[] CharacterIds = { "male_casual", "secretary", "scientist", "redneck" };
+        internal static readonly string[] CharacterNames = { "MIKE", "MADDY", "MARK", "MAVERICK" };
         /// <summary>Who made each character's model (credited in the menus and the README).</summary>
-        internal static readonly string[] CharacterArtists = { "VINRAX", "VINRAX", "VINRAX" };
+        internal static readonly string[] CharacterArtists = { "VINRAX", "VINRAX", "VINRAX", "VINRAX" };
         internal static string ValidCharacter(string id) { return CharacterIds.Contains(id) ? id : CharacterIds[0]; }
 
         [Serializable]
@@ -755,6 +755,8 @@ namespace NunMassacre.Multiplayer.Players
             internal readonly RenderTexture Texture;
             private Avatar avatar;
             private float clock;
+            private Texture2D shadowTexture;
+            private Material shadowMaterial;
             internal Preview(RemotePlayers owner, int width, int height)
             {
                 Owner = owner;
@@ -765,11 +767,12 @@ namespace NunMassacre.Multiplayer.Players
                 cameraObject.transform.SetParent(Stage.transform, false);
                 Camera = cameraObject.AddComponent<Camera>();
                 Camera.clearFlags = CameraClearFlags.SolidColor;
-                Camera.backgroundColor = new Color(0.05f, 0.04f, 0.09f, 1f);
+                Camera.backgroundColor = new Color(0f, 0f, 0f, 0f); // Clear: the character stands on the menu box itself.
                 Camera.fieldOfView = 32f; Camera.nearClipPlane = 0.1f; Camera.farClipPlane = 15f;
-                Camera.transform.localPosition = new Vector3(0f, 1.1f, 4.4f);
-                Camera.transform.LookAt(Stage.transform.position + Vector3.up * 0.95f);
-                Texture = new RenderTexture(width, height, 24) { name = "NMM_CustomizePreview" };
+                Camera.transform.localPosition = new Vector3(0f, 1.0f, 3.7f); // Head to toe, filling the frame.
+                Camera.transform.LookAt(Stage.transform.position + Vector3.up * 0.93f);
+                Texture = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32) { name = "NMM_CustomizePreview" };
+                Floor(Stage.transform);
                 Camera.targetTexture = Texture;
                 foreach (var spot in new[] { new Vector3(1.6f, 2.6f, 2.4f), new Vector3(-2f, 1.4f, -1.5f) })
                 {
@@ -779,6 +782,33 @@ namespace NunMassacre.Multiplayer.Players
                     lamp.type = LightType.Point; lamp.range = 10f; lamp.intensity = spot.x > 0 ? 2.2f : 0.9f;
                     lamp.color = spot.x > 0 ? new Color(1f, 0.92f, 0.85f) : new Color(0.6f, 0.65f, 1f);
                 }
+            }
+
+            /// <summary>A soft shadow on the floor under the character's feet, so they stand on something.</summary>
+            private void Floor(Transform stage)
+            {
+                const int size = 64;
+                var shade = new Texture2D(size, size, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp };
+                for (int y = 0; y < size; y++)
+                    for (int x = 0; x < size; x++)
+                    {
+                        float dx = (x + 0.5f) / size * 2f - 1f, dy = (y + 0.5f) / size * 2f - 1f;
+                        float edge = Mathf.Clamp01(1f - Mathf.Sqrt(dx * dx + dy * dy));
+                        shade.SetPixel(x, y, new Color(0f, 0f, 0f, 0.75f * edge * edge));
+                    }
+                shade.Apply();
+                shadowTexture = shade;
+                var shader = Shader.Find("Sprites/Default");
+                if (!shader) return;
+                var floor = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                UnityEngine.Object.Destroy(floor.GetComponent<Collider>());
+                floor.name = "Shadow";
+                floor.transform.SetParent(stage, false);
+                floor.transform.localPosition = new Vector3(0f, 0.005f, 0f);
+                floor.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+                floor.transform.localScale = new Vector3(0.9f, 0.55f, 1f);
+                shadowMaterial = new Material(shader) { mainTexture = shade };
+                floor.GetComponent<Renderer>().sharedMaterial = shadowMaterial;
             }
 
             internal void Show(string character)
@@ -810,6 +840,8 @@ namespace NunMassacre.Multiplayer.Players
                 Camera.targetTexture = null;
                 Texture.Release();
                 UnityEngine.Object.Destroy(Texture);
+                if (shadowMaterial) UnityEngine.Object.Destroy(shadowMaterial);
+                if (shadowTexture) UnityEngine.Object.Destroy(shadowTexture);
                 UnityEngine.Object.Destroy(Stage);
             }
         }

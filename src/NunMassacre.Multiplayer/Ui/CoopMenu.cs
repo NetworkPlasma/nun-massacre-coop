@@ -81,7 +81,6 @@ namespace NunMassacre.Multiplayer.Ui
         private string joiningGame; // Whose game on this network is being joined (its address is never shown).
         private RawImage previewImage;
         private Players.RemotePlayers.Preview preview;
-        private Text lookName;
         private string message = "";
         private float nextRefresh;
         private Transform labelTemplate, buttonTemplate, valueTemplate;
@@ -174,6 +173,7 @@ namespace NunMassacre.Multiplayer.Ui
             nameField = FieldRow("YOUR NAME", plugin.PlayerName.Value, 24, InputField.ContentType.Standard, out nameRow);
             if (!IsInvite(plugin.Address.Value)) plugin.Address.Value = ""; // Only an invite code is kept, never an address.
             nameField.onEndEdit.AddListener(SaveName);
+            Boxed(nameField, 0.5f, 0.98f); // Drawn as a box to type in, so it reads as one.
             // Each box says what it asks of the player.
             hostIntro = Guide("HostIntro", "BE THE HOST AND INVITE FRIENDS:");
             hostButton = Row("HOST GAME", HostGame);
@@ -190,6 +190,12 @@ namespace NunMassacre.Multiplayer.Ui
             }
             // In a session: what to tell friends, and who is here.
             inviteRow = ValueRow("INVITE CODE", "", CopyInvite, out inviteValue);
+            // The code alone, centred in a frame like the box friends paste it into (the line above says what it is).
+            var inviteLabel = inviteRow.GetComponentsInChildren<Text>(true).FirstOrDefault(t => t != inviteValue);
+            if (inviteLabel) inviteLabel.text = "";
+            Anchor(inviteValue.rectTransform, 0.08f, 0f, 0.92f, 1f);
+            inviteValue.alignment = TextAnchor.MiddleCenter;
+            Frame(inviteRow.transform, 0.05f, 0.95f);
             joinTitle = Guide("JoinTitle", "SEND YOUR FRIENDS THIS INVITE CODE:");
             localNote = Guide("LocalNote", "FRIENDS ON YOUR NETWORK CAN JOIN.");
             playersTitle = SubLabel("PlayersTitle", "PLAYERS");
@@ -214,37 +220,32 @@ namespace NunMassacre.Multiplayer.Ui
             BuildVoice();
         }
 
-        // Character: what teammates see. A live turntable preview beside the column.
+        // Character: what teammates see. One framed box: the character turning in it, their name to choose under them.
         private void BuildCustomize()
         {
             buildParent = customizePage;
             Title("- CHARACTER -");
-            // As the lobby: the turntable in one framed box, the choice in the other.
-            var preview = MakeBox("PreviewBox", "PREVIEW");
-            Anchor(preview.Root, 0.06f, BoxBottom - 0.05f, 0.45f, BoxTop);
-            var choice = MakeBox("ChoiceBox", "WHO TEAMMATES SEE");
-            Anchor(choice.Root, 0.49f, BoxBottom - 0.05f, 0.94f, BoxTop);
-            var area = new GameObject("NMM_PreviewArea", typeof(RectTransform)).GetComponent<RectTransform>(); // Under the heading, inside the frame.
-            area.SetParent(preview.Root, false);
-            area.anchorMin = Vector2.zero; area.anchorMax = Vector2.one; area.offsetMin = new Vector2(8f, 8f); area.offsetMax = new Vector2(-8f, -40f);
+            const float boxBottom = BoxBottom - 0.05f, chooser = 0.115f; // The chooser's share of the box, at its foot.
+            var box = MakeBox("PreviewBox", "WHO TEAMMATES SEE");
+            Anchor(box.Root, 0.3f, boxBottom, 0.7f, BoxTop);
+            box.Root.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.85f); // Dark behind the character, so they stand out.
+            var area = new GameObject("NMM_PreviewArea", typeof(RectTransform)).GetComponent<RectTransform>(); // Under the heading, over the chooser.
+            area.SetParent(box.Root, false);
+            area.anchorMin = new Vector2(0f, chooser); area.anchorMax = Vector2.one; area.offsetMin = new Vector2(8f, 0f); area.offsetMax = new Vector2(-8f, -40f);
             var image = new GameObject("NMM_Preview", typeof(RectTransform), typeof(CanvasRenderer), typeof(RawImage), typeof(AspectRatioFitter));
             image.transform.SetParent(area, false);
             var fit = image.GetComponent<AspectRatioFitter>();
             fit.aspectMode = AspectRatioFitter.AspectMode.FitInParent; fit.aspectRatio = 400f / 560f; // The turntable's shape: never stretched, never cut.
             previewImage = image.GetComponent<RawImage>();
             previewImage.color = Color.white;
-            lookRow = ValueRow("LOOK", "", () =>
-            {
-                int i = Array.IndexOf(Players.RemotePlayers.CharacterIds, Players.RemotePlayers.ValidCharacter(plugin.Character.Value));
-                plugin.Character.Value = Players.RemotePlayers.CharacterIds[(i + 1) % Players.RemotePlayers.CharacterIds.Length];
-                RefreshCustomize();
-            }, out lookValue);
-            lookRow.GetComponentInChildren<Text>(true).text = "CHARACTER";
-            Place(lookRow, 0.502f, 0.922f, BoxTop - Header - RowHeight, BoxTop - Header);
-            lookName = Label("LookName", "", 15, TextAnchor.UpperLeft);
-            lookName.horizontalOverflow = HorizontalWrapMode.Wrap;
-            lookName.verticalOverflow = VerticalWrapMode.Overflow;
-            Anchor(lookName.rectTransform, 0.53f, 0.25f, 0.92f, BoxTop - Header - RowHeight - Gap);
+            previewImage.raycastTarget = false;
+            // "< MIKE >": select it, or press left and right, to step through the characters.
+            lookRow = ValueRow("LOOK", "", () => StepCharacter(1), out lookValue);
+            lookRow.GetComponentInChildren<Text>(true).text = "";
+            Anchor(lookValue.rectTransform, 0.05f, 0f, 0.95f, 1f);
+            lookValue.alignment = TextAnchor.MiddleCenter;
+            float chooserTop = boxBottom + (BoxTop - boxBottom) * chooser;
+            Place(lookRow, 0.31f, 0.69f, chooserTop - RowHeight - 0.008f, chooserTop - 0.008f);
             var back = Row("LOOK BACK", CloseCustomize);
             back.GetComponentInChildren<Text>(true).text = "BACK";
             Place(back, 0.36f, 0.64f, 0.04f, 0.04f + RowHeight);
@@ -369,7 +370,7 @@ namespace NunMassacre.Multiplayer.Ui
                 new { Text = "NUN MASSACRE CO-OP " + Plugin.Version + ": THE MULTIPLAYER MOD", Url = (string)null, Size = 17, Section = false },
                 new { Text = "BY NETWORKPLASMA", Url = (string)null, Size = 20, Section = false },
                 new { Text = "CHARACTER MODELS", Url = (string)null, Size = 20, Section = true },
-                new { Text = "MIKE, MADDY AND MARK BY VINRAX", Url = (string)null, Size = 17, Section = false },
+                new { Text = "MIKE, MADDY, MARK AND MAVERICK BY VINRAX (CC BY 4.0)", Url = (string)null, Size = 17, Section = false },
                 new { Text = "SKETCHFAB.COM/VINRAX", Url = "https://sketchfab.com/vinrax", Size = 16, Section = false },
                 new { Text = "X.COM/VINRAX", Url = "https://x.com/Vinrax", Size = 16, Section = false },
                 new { Text = "MOTION CAPTURE: MIXAMO", Url = (string)null, Size = 17, Section = true },
@@ -455,13 +456,28 @@ namespace NunMassacre.Multiplayer.Ui
             preview = null;
         }
 
+        private void UpdateCustomize()
+        {
+            if (preview != null) preview.Animate(Mathf.Min(Time.unscaledDeltaTime, 0.1f));
+            var selected = EventSystem.current ? EventSystem.current.currentSelectedGameObject : null;
+            if (selected != lookRow.gameObject) return;
+            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A)) StepCharacter(-1);
+            else if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) StepCharacter(1);
+        }
+
+        private void StepCharacter(int step)
+        {
+            var ids = Players.RemotePlayers.CharacterIds;
+            int i = Array.IndexOf(ids, Players.RemotePlayers.ValidCharacter(plugin.Character.Value));
+            plugin.Character.Value = ids[(i + step + ids.Length) % ids.Length];
+            RefreshCustomize();
+        }
+
         private void RefreshCustomize()
         {
             string character = Players.RemotePlayers.ValidCharacter(plugin.Character.Value);
             int characterIndex = Array.IndexOf(Players.RemotePlayers.CharacterIds, character);
             lookValue.text = "< " + Players.RemotePlayers.CharacterNames[characterIndex] + " >";
-            lookName.text = "SELECT TO SWITCH CHARACTER. TEAMMATES SEE YOUR CHOICE IN GAME, AND CHANGES APPLY RIGHT AWAY, EVEN IN A SESSION.\n\nMODEL BY "
-                + Players.RemotePlayers.CharacterArtists[characterIndex] + ".";
             if (preview != null) preview.Show(character);
         }
 
@@ -487,7 +503,7 @@ namespace NunMassacre.Multiplayer.Ui
 
         private void Update()
         {
-            if (customizePage.gameObject.activeSelf) { if (preview != null) preview.Animate(Mathf.Min(Time.unscaledDeltaTime, 0.1f)); return; }
+            if (customizePage.gameObject.activeSelf) { UpdateCustomize(); return; }
             if (voicePage.gameObject.activeSelf) { UpdateVoice(); return; }
             if (Time.unscaledTime >= nextRefresh) Refresh();
         }
@@ -499,7 +515,7 @@ namespace NunMassacre.Multiplayer.Ui
             Session session = plugin.Session;
             bool active = session.Active, connected = session.Connected, host = session.IsHost;
             bool invite = host && !string.IsNullOrEmpty(session.Invite);
-            nameRow.SetActive(!active); addressRow.SetActive(!active);
+            nameRow.SetActive(!active || connected); addressRow.SetActive(!active); // The name can be changed in the lobby too.
             hostButton.gameObject.SetActive(!active);
             foreach (var note in new[] { hostIntro, hostNote, upnpNote, joinIntro }) note.gameObject.SetActive(!active);
             RefreshLan(!active && gameObject.activeInHierarchy);
@@ -628,7 +644,7 @@ namespace NunMassacre.Multiplayer.Ui
                 ? new List<Component> { joinTitle, inviteRow, localNote, null, playersTitle, slots[0], slots[1], slots[2], slots[3] }
                 : new List<Component> { hostIntro, hostButton, hostNote, null, upnpNote, active ? leaveButton : null };
             var right = connected
-                ? new List<Component> { settingsIntro, characterButton, voiceButton }
+                ? new List<Component> { settingsIntro, nameRow.transform, characterButton, voiceButton }
                 : new List<Component> { joinIntro, addressRow.transform, null, lanTitle, lanButtons[0], lanButtons[1], lanButtons[2] };
             var leftOrder = Fill(left, leftMin, leftMax, top);
             var rightOrder = Fill(right, rightMin, rightMax, top);
@@ -912,6 +928,18 @@ namespace NunMassacre.Multiplayer.Ui
             Bar(frame, "Right", new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-1.5f, 0f), Vector2.zero, 0.8f);
         }
 
+        /// <summary>A text field drawn as a box to type in: what is typed, centred in a thin frame across the row from left to
+        /// right.</summary>
+        private static void Boxed(InputField field, float left, float right)
+        {
+            foreach (var text in new[] { field.textComponent, (Text)field.placeholder })
+            {
+                Anchor(text.rectTransform, left + 0.03f, 0f, right - 0.03f, 1f);
+                text.alignment = TextAnchor.MiddleCenter;
+            }
+            Frame(field.transform, left, right);
+        }
+
         /// <summary>
         /// The invite code box: one framed field and nothing else to press. A whole, valid code joins as soon as it is in the
         /// box (pasted or typed); a mistyped one says so. Enter joins with whatever is there, so a VPN address works too.
@@ -921,13 +949,8 @@ namespace NunMassacre.Multiplayer.Ui
             var field = FieldRow("INVITE CODE", "", 64, InputField.ContentType.Standard, out row);
             var label = field.GetComponentsInChildren<Text>(true).FirstOrDefault(t => t != field.textComponent && t != field.placeholder);
             if (label) label.gameObject.SetActive(false);
-            foreach (var text in new[] { field.textComponent, (Text)field.placeholder })
-            {
-                Anchor(text.rectTransform, 0.08f, 0f, 0.92f, 1f);
-                text.alignment = TextAnchor.MiddleCenter;
-            }
-            ((Text)field.placeholder).text = "CLICK HERE, THEN CTRL+V";
-            Frame(field.transform, 0.05f, 0.95f);
+            Boxed(field, 0.05f, 0.95f);
+            ((Text)field.placeholder).text = "INVITE CODE";
             field.onValueChanged.AddListener(value =>
             {
                 string code = value.Trim();
