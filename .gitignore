@@ -1,0 +1,25 @@
+# Builds
+**/bin/
+**/obj/
+/artifacts/
+/test-results/
+*.zip
+
+# Not ours to publish: the game, the loader download, Vercidium's SDK, raw Mixamo animations
+/Nun Massacre Definitive Edition*/
+/.tools/
+/vendor/
+/animations/
+
+# Working folders and other projects
+/.research/
+/output/
+/outputs/
+/Share/
+/tools/
+/roblox-port/
+/node_modules
+/*.mjs
+
+# Old archives
+*.rar
