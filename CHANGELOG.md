@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Teammates hold things properly: the hand closes round a hammer's handle a little way up, with its end showing
+  below the fist, instead of the hammer seeming to stand on top of it; the radar and other broad things sit in the
+  palm with the fingers round them instead of reaching out past the back of the hand.
+
 ## 1.0.0
 
 The first public release of the multiplayer mod for Nun Massacre Definitive Edition (Windows, build 2022.06.08).

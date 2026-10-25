@@ -1180,14 +1180,18 @@ namespace NunMassacre.Multiplayer
             else if (action == "handshot")
             {
                 // "peer|name|view": a close picture of a teammate's right hand and what it holds. View "front" (from ahead and
-                // to their right), "side" (from their right), "back" (over their shoulder), "far" (the whole body).
+                // to their right), "side" (from their right), "back" (over their shoulder), "far" (the whole body); "hand"
+                // and "inside" look at the hand itself, from outside it and from in front of the body.
                 string[] parts = argument.Split('|');
                 Transform body; GameObject held;
                 var hand = plugin.Session.Avatars.GetHand(int.Parse(parts[0]), out body, out held);
                 if (!hand) throw new InvalidOperationException("no hand for peer " + parts[0]);
                 string view = parts.Length > 2 ? parts[2] : "front";
-                Vector3 look = held ? Bounds(held).center : hand.position;
-                Vector3 from = view == "side" ? look + body.right * 0.7f + Vector3.up * 0.05f
+                Vector3 look = view == "hand" || view == "inside" ? plugin.Session.Avatars.HandMiddle(int.Parse(parts[0]))
+                    : held ? Bounds(held).center : hand.position;
+                Vector3 from = view == "hand" ? look + body.forward * 0.45f + body.right * 0.3f + Vector3.up * 0.08f
+                    : view == "inside" ? look + body.forward * 0.4f - body.right * 0.35f + Vector3.up * 0.08f
+                    : view == "side" ? look + body.right * 0.7f + Vector3.up * 0.05f
                     : view == "back" ? look - body.forward * 0.55f + body.right * 0.2f + Vector3.up * 0.35f
                     : view == "far" ? body.position + body.forward * 2.2f + body.right * 0.6f + Vector3.up * 1.3f
                     : look + body.forward * 0.6f + body.right * 0.35f + Vector3.up * 0.12f;

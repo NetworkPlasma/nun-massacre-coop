@@ -1107,9 +1107,14 @@ namespace NunMassacre.Multiplayer.Players
 
         }
 
-        /// <summary>Where a hand closes on an item (its own units): on the item itself, at its bottom as the game holds it (a
-        /// hammer's handle end, a bottle's base, a radar's grip): the middle of the mesh's corners in the lowest few centimetres.
-        /// A tilted thing's box is mostly empty space, so its middle would leave the item floating beside the hand.</summary>
+        /// <summary>
+        /// Where a hand closes on an item (its own units), as the game holds it: a fist's width up from its bottom (round a
+        /// hammer's handle with its end showing below the fist, round a radar's lower half), not on the very end, where the
+        /// item would seem to stand on the fist. Across the hand it sits on the palm side: the side towards the back of the
+        /// hand just past the hand's middle, so a broad thing lies in the palm with the fingers round it instead of reaching
+        /// out past the knuckles; a handle goes through the middle of the fist. Measured on the mesh's own corners: a tilted
+        /// thing's box is mostly empty space, so its middle would leave the item floating beside the hand.
+        /// </summary>
         private static Vector3 GripOf(Transform holder, Quaternion heldTurn)
         {
             var points = new List<Vector3>();
@@ -1131,13 +1136,16 @@ namespace NunMassacre.Multiplayer.Players
                 foreach (var corner in corners) points.Add(heldTurn * (part.localPosition + part.localRotation * Vector3.Scale(corner, part.localScale)));
             }
             if (points.Count == 0) return Vector3.zero;
+            // As held: X towards the back of the hand, Y along the thumb, Z along the fingers (see HoldInHand).
+            Vector3 size = holder.lossyScale;
+            float across = (Mathf.Abs(size.x) + Mathf.Abs(size.y) + Mathf.Abs(size.z)) / 3f;
+            float metre = across > 1e-6f ? 1f / across : 1f; // The item's own units in a metre.
             float bottom = points.Min(p => p.y), top = points.Max(p => p.y);
-            float band = Mathf.Max(Mathf.Min((top - bottom) * 0.2f, 0.06f), 0.005f);
-            var low = points.Where(p => p.y <= bottom + band).ToList();
-            Vector3 seen = Vector3.zero;
-            foreach (var p in low) seen += p;
-            seen /= low.Count;
-            seen.y = bottom + band * 0.6f;
+            float up = Mathf.Max(Mathf.Min((top - bottom) * 0.45f, 0.06f * metre), 0.005f * metre);
+            var low = points.Where(p => p.y <= bottom + up * 2f).ToList(); // The part the fist closes round.
+            float left = low.Min(p => p.x), right = low.Max(p => p.x);
+            var seen = new Vector3(Mathf.Max((left + right) * 0.5f, right - 0.01f * metre), bottom + up,
+                (low.Min(p => p.z) + low.Max(p => p.z)) * 0.5f);
             return Quaternion.Inverse(heldTurn) * seen;
         }
 
