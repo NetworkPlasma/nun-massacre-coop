@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <AssemblyName>NunMassacre.Multiplayer</AssemblyName>
+    <RootNamespace>NunMassacre.Multiplayer</RootNamespace>
+    <Version>1.0.0</Version>
+    <GameDir Condition="'$(GameDir)' == ''">$(MSBuildThisFileDirectory)..\..\Nun Massacre Definitive Edition (Windows) 2022.06.08</GameDir>
+    <ManagedDir>$(GameDir)\Nun Massacre_Data\Managed</ManagedDir>
+    <LoaderDir>$(MSBuildThisFileDirectory)..\..\.tools\BepInEx\BepInEx\core</LoaderDir>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <Reference Include="$(ManagedDir)\UnityEngine*.dll"><Private>false</Private></Reference>
+    <Reference Include="$(ManagedDir)\Assembly-CSharp.dll"><Private>false</Private></Reference>
+    <Reference Include="$(ManagedDir)\Assembly-CSharp-firstpass.dll"><Private>false</Private></Reference>
+    <Reference Include="$(ManagedDir)\MonsterLove.StateMachine.Runtime.dll"><Private>false</Private></Reference>
+    <Reference Include="$(ManagedDir)\Rewired_Core.dll"><Private>false</Private></Reference>
+    <Reference Include="$(ManagedDir)\DOTween.dll"><Private>false</Private></Reference>
+    <Reference Include="$(ManagedDir)\Newtonsoft.Json.dll"><Private>false</Private></Reference>
+    <Reference Include="$(LoaderDir)\BepInEx.dll"><Private>false</Private></Reference>
+    <Reference Include="$(LoaderDir)\0Harmony.dll"><Private>false</Private></Reference>
+  </ItemGroup>
+  <Import Project="Players\PlayerAssets.props" />
+  <ItemGroup>
+    <!-- Hiding voice meter outline, supplied art. -->
+    <EmbeddedResource Include="Ui\Assets\voice_meter.png" LogicalName="NMM.Ui.VoiceMeter" />
+  </ItemGroup>
+</Project>

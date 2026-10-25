@@ -1,0 +1,32 @@
+<Project>
+  <!-- Characters converted by scripts/convert-player-model.py; ids match RemotePlayers.CharacterIds. -->
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\male_casual.mesh.json" LogicalName="NMM.Character.male_casual.Mesh" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\male_casual.png" LogicalName="NMM.Character.male_casual.Texture" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\secretary.mesh.json" LogicalName="NMM.Character.secretary.Mesh" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\secretary.png" LogicalName="NMM.Character.secretary.Texture" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\scientist.mesh.json" LogicalName="NMM.Character.scientist.Mesh" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\scientist.png" LogicalName="NMM.Character.scientist.Texture" />
+    <!-- Motion-captured clips converted by scripts/convert-animation.py from Mixamo FBX files: the crawl (downed
+         players) and the walks (Walking for Mike and Mark, Female Walk for Maddy). -->
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\crawl.anim.json" LogicalName="NMM.Anim.Crawl" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\walk_male.anim.json" LogicalName="NMM.Anim.WalkMale" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\walk_female.anim.json" LogicalName="NMM.Anim.WalkFemale" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\run_male.anim.json" LogicalName="NMM.Anim.RunMale" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\run_female.anim.json" LogicalName="NMM.Anim.RunFemale" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\jump_male.anim.json" LogicalName="NMM.Anim.JumpMale" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\jump_female.anim.json" LogicalName="NMM.Anim.JumpFemale" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\crouch_walk.anim.json" LogicalName="NMM.Anim.CrouchWalk" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\crouch_walk_female.anim.json" LogicalName="NMM.Anim.CrouchWalkFemale" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\shoot.anim.json" LogicalName="NMM.Anim.Shoot" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\idle.anim.json" LogicalName="NMM.Anim.Idle" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\crouch_idle.anim.json" LogicalName="NMM.Anim.CrouchIdle" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\prone.anim.json" LogicalName="NMM.Anim.Prone" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\hit.anim.json" LogicalName="NMM.Anim.Hit" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\throw.anim.json" LogicalName="NMM.Anim.Throw" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\open_door.anim.json" LogicalName="NMM.Anim.OpenDoor" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\take.anim.json" LogicalName="NMM.Anim.Take" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\pickup_low.anim.json" LogicalName="NMM.Anim.PickUpLow" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Assets\dead.anim.json" LogicalName="NMM.Anim.Dead" />
+  </ItemGroup>
+</Project>
