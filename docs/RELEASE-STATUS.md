@@ -13,8 +13,8 @@ in [VALIDATION.md](VALIDATION.md).
 | Game | Nun Massacre Definitive Edition, Windows, 2022.06.08 (`Assembly-CSharp.dll` SHA-256 `0132e2e1556cdd8026eb42a08774cfeb94e313c4e29d40cfe640c8fc5fa0e871`) |
 | Loader | BepInEx 5.4.23.3 (`BepInEx_win_x64_5.4.23.3.zip` SHA-256 `41a089e5b1b1f0713b331346baf6677b1184c69eabebf51101097954e854c749`), inside the setup |
 | Raytracer | Vercidium Audio 1.10.1, `vaudionative.dll` SHA-256 `d58a5a4dc196eca34941b31b465d395fdfb69af73595d423f89b8f8dfaa66c7e` |
-| Plugin | `NunMassacre.Multiplayer.dll` SHA-256 `be4718afcb336c7a7697378b352966f9425a80fb6f205e1b1c4cac79c9dd6c1a` |
-| Setup | `NunMassacreCoop-Setup-1.0.0.exe` SHA-256 `a9f4b508390e00a3bd3314d166c6b8f7ada930c112798bb99d0c01ab343675c5` |
+| Plugin | `NunMassacre.Multiplayer.dll` SHA-256 `157ccb400b34347ed9a2c4fef615de436bb29292aac0d2081f2ce009db62b499` |
+| Setup | `NunMassacreCoop-Setup-1.0.0.exe` SHA-256 `7de10291b705255c39bc2ff05e4680f44120e4a68f6e44fd24142274500d6ecd` |
 | Archives | `NunMassacreCoop-1.0.0.zip` and `NunMassacreCoop-Source-1.0.0.zip`: their SHA-256 are in `SHA256SUMS-1.0.0.txt` beside them |
 
 The setup carries the same plugin, raytracer and loader as the player zip; each file in the zip is listed with its
