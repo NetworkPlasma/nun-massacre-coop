@@ -6,6 +6,8 @@ A multiplayer mod for **Nun Massacre Definitive Edition** (Windows, build 2022.0
 
 Every player needs their own copy of the game and the same version of the mod.
 
+<p align="center"><img src="docs/images/screenshot-bedroom.png" alt="The Nun in a doorway, three teammates in a dark bedroom"></p>
+
 ## Install
 
 1. Run **NunMassacreCoop-Setup.exe**. It finds the game by itself; if it doesn't, press **BROWSE** and pick `Nun Massacre.exe`.
