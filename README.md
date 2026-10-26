@@ -7,8 +7,9 @@ A multiplayer mod for **Nun Massacre Definitive Edition** (Windows, build 2022.0
 Every player needs their own copy of the game and the same version of the mod.
 
 <p align="center">
-  <img src="docs/images/screenshot-bedroom.png" width="49%" alt="The Nun in a doorway, three teammates in a dark bedroom">
-  <img src="docs/images/screenshot-vent.png" width="49%" alt="Two teammates crawling through a vent">
+  <img src="docs/images/screenshot-bedroom.png" width="32%" alt="The Nun in a doorway, three teammates in a dark bedroom">
+  <img src="docs/images/screenshot-vent.png" width="32%" alt="Two teammates crawling through a vent">
+  <img src="docs/images/screenshot-from-above.png" width="32%" alt="Looking down on teammates in a dark hall">
 </p>
 
 ## Install
