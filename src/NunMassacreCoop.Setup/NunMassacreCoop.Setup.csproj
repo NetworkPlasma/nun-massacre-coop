@@ -21,6 +21,9 @@
     <LoaderZip Condition="'$(LoaderZip)' == ''">..\..\.tools\BepInEx_win_x64_5.4.23.3.zip</LoaderZip>
     <RaytracerDll Condition="'$(RaytracerDll)' == ''">..\..\vendor\vaudio\3d\native\production\windows\vaudionative.dll</RaytracerDll>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <!-- Release builds name no folder of the PC they were built on (no debug-file path inside the program). -->
+    <DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
+    <PathMap>$(MSBuildProjectDirectory)=.</PathMap>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
